@@ -3,7 +3,7 @@
 export const fetchStream = async (onNewData) => {
   return new Promise((resolve, reject) => {
     const eventSource = new EventSource(
-      "http://localhost:3000/api/llm-connector"
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/llm-connector`
     );
 
     eventSource.onopen = () => {
@@ -43,13 +43,16 @@ export const fetchStream = async (onNewData) => {
 
 export const setRedisCookies = async (searchString) => {
   try {
-    const response = await fetch("http://localhost:3000/api/store-search", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ searchString }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/store-search`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ searchString }),
+      }
+    );
 
     if (!response.ok) {
       const errorDetails = await response.json();
