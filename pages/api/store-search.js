@@ -31,6 +31,7 @@ export default async function handler(req, res) {
 
       await client.set(sessionId, searchString);
       await storeChatMessage(sessionId, "user", searchString);
+      await client.expire(sessionId, 3600);
       // const chats = await getChatHistory(sessionId);
       // console.log("Chat history:", JSON.stringify(chats));
       res
