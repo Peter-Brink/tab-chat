@@ -1,5 +1,9 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { connectRedis } = require("../../src/lib/redis");
+const {
+  connectIoRedis,
+  getChatHistory,
+  storeChatMessage,
+} = require("../../src/lib/ioredis");
 
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "text/event-stream");
@@ -9,7 +13,7 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Credentials", "true");
 
-  const client = await connectRedis();
+  const client = await connectIoRedis();
 
   req.on("close", () => {
     console.log("Client disconnected");
@@ -24,6 +28,7 @@ export default async function handler(req, res) {
 
   try {
     const searchString = await client.get(sessionId);
+    const chatHistory = await getChatHistory(sessionId);
 
     if (!searchString) {
       return res
@@ -38,26 +43,22 @@ export default async function handler(req, res) {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const chat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{ text: "Hello" }],
-        },
-        {
-          role: "model",
-          parts: [{ text: "Great to meet you. What would you like to know?" }],
-        },
-      ],
+      history: chatHistory,
     });
 
     const result = await chat.sendMessageStream(searchString);
 
+    let llmResponse = "";
+
     for await (const chunk of result.stream) {
       const chunkText = chunk.text();
       console.log(chunkText);
+      llmResponse += chunkText;
       res.write(`data: ${JSON.stringify(chunkText)}\n\n`);
       res.flush();
     }
+
+    storeChatMessage(sessionId, "model", llmResponse);
 
     res.write(`data: ${JSON.stringify("[DONE]")}\n\n`);
     res.flush();

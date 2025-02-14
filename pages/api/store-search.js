@@ -1,5 +1,9 @@
 const { v4: uuidv4 } = require("uuid");
-const { connectRedis } = require("../../src/lib/redis");
+const {
+  connectIoRedis,
+  storeChatMessage,
+  getChatHistory,
+} = require("../../src/lib/ioredis");
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -23,8 +27,12 @@ export default async function handler(req, res) {
     }
 
     try {
-      const client = await connectRedis();
+      const client = await connectIoRedis();
+
       await client.set(sessionId, searchString);
+      await storeChatMessage(sessionId, "user", searchString);
+      // const chats = await getChatHistory(sessionId);
+      // console.log("Chat history:", JSON.stringify(chats));
       res
         .status(200)
         .json({ message: "Search string stored and session ID set." });

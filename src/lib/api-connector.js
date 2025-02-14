@@ -1,44 +1,44 @@
 "use client";
 
-export const fetchStream = async (onNewData, searchString) => {
-  const eventSource = new EventSource(
-    "http://localhost:3000/api/llm-connector"
-  );
+export const fetchStream = async (onNewData) => {
+  return new Promise((resolve, reject) => {
+    const eventSource = new EventSource(
+      "http://localhost:3000/api/llm-connector"
+    );
 
-  eventSource.onopen = () => {
-    console.log("SSE connection established");
-  };
+    eventSource.onopen = () => {
+      console.log("SSE connection established");
+    };
 
-  eventSource.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      if (data === "[DONE]") {
-        console.log("✅ Server has finished sending messages.");
-        eventSource.close();
-      } else {
-        console.log(data);
-        onNewData(data);
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data === "[DONE]") {
+          console.log("✅ Server has finished sending messages.");
+          eventSource.close();
+          resolve();
+        } else {
+          onNewData(data);
+        }
+      } catch (error) {
+        console.error("Error parsing incoming data:", error);
       }
-    } catch (error) {
-      console.error("Error parsing incoming data:", error);
-    }
-  };
+    };
 
-  eventSource.onerror = (error) => {
-    console.error("Error in SSE connection:", error);
-    if (eventSource.readyState === EventSource.CLOSED) {
-      console.log("SSE connection closed by the server.");
-    } else {
-      console.error(
-        "Error in SSE connection. ReadyState:",
-        eventSource.readyState
-      );
-    }
-    eventSource.close();
-  };
-
-  // Return the eventSource object to allow control over the connection
-  return eventSource;
+    eventSource.onerror = (error) => {
+      if (eventSource.readyState === EventSource.CLOSED) {
+        console.log("SSE connection closed prematurely by the server.");
+        reject(error);
+      } else {
+        console.error(
+          "Error in SSE connection. ReadyState:",
+          eventSource.readyState
+        );
+        reject(error);
+      }
+      eventSource.close();
+    };
+  });
 };
 
 export const setRedisCookies = async (searchString) => {
