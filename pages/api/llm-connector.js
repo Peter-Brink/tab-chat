@@ -7,11 +7,11 @@ const {
 
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cach, no transform");
-  res.setHeader("Connection", "keep-alive");
-  //TODO: Change this to the domain of your website
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
+  // res.setHeader("Cache-Control", "no-cach, no transform");
+  // res.setHeader("Connection", "keep-alive");
+  // //TODO: Change this to the domain of your website
+  // res.setHeader("Access-Control-Allow-Origin", "http://wekhbwejvlhvbwelh");
+  // res.setHeader("Access-Control-Allow-Credentials", "true");
 
   const client = await connectIoRedis();
 
