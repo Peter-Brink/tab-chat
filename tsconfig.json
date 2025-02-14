@@ -18,6 +18,7 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
@@ -27,7 +28,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/search/page.js"
-, "src/app/page.js"  ],
+    "src/app/search/page.js",
+    "src/app/page.js"
+  ],
   "exclude": ["node_modules"]
 }
