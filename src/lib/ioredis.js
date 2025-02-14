@@ -5,7 +5,9 @@ let client = null;
 async function connectIoRedis() {
   if (!client) {
     const redisUrl = process.env.REDIS_URL;
-    client = new Redis(redisUrl, {tls: redisUrl.includes("rediss://") ? {} : undefined});
+    client = new Redis(redisUrl + "?family=0", {
+      tls: redisUrl.includes("rediss://") ? {} : undefined,
+    });
     console.log("Redis Client Connected");
 
     // Set max memory limit (500MB)
