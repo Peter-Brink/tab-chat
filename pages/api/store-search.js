@@ -6,10 +6,10 @@ const {
 } = require("../../src/lib/ioredis");
 
 export default async function handler(req, res) {
-  if (req.method === "GET") {
-    return res.status(200).json({ message: "You hit this endpoint" });
-  }
-
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://www.youtube.com/watch?v=3bPlu0StTUE"
+  );
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   } else {
