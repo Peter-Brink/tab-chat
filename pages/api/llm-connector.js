@@ -1,5 +1,3 @@
-import next from "next";
-
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const {
   connectIoRedis,
