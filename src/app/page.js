@@ -9,13 +9,11 @@ import {
   getChatHistory,
 } from "@/lib/api-connector";
 import TabButton from "@/components/side-drawer";
-import { get } from "http";
 
 const Search = () => {
   const [testArray, setTestArray] = useState([]);
   const [searchString, setSearchString] = useState("");
   const [tabResults, setTabResults] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const [selectedText, setSelectedText] = useState("");
   const [replyText, setReplyText] = useState("");
@@ -35,6 +33,8 @@ const Search = () => {
   };
 
   useEffect(() => {
+    retrieveChatHistory();
+
     const handleTextSelection = (e) => {
       setTimeout(() => {
         const selection = window.getSelection();
@@ -84,13 +84,7 @@ const Search = () => {
     fetchTabStream((chunk) => {
       setTabResults((prev) => prev + chunk);
     }).then(() => {
-      setTabResults(
-        (prev) =>
-          prev +
-          "\n-------------------------------------------------------------------------\n\n"
-      );
       setIsFetching(false);
-      setTabText("");
     });
   };
 
@@ -127,10 +121,12 @@ const Search = () => {
     });
   }
 
-  async function onGetChatHistory() {
+  async function retrieveChatHistory() {
     const history = await getChatHistory();
-    console.log(history);
-    // setTestArray(() => history);
+    const formattedHistory = history.map((item) => {
+      return { role: item.role, text: item.parts[0].text, isComplete: true };
+    });
+    setTestArray(() => formattedHistory);
   }
 
   const search = async () => {
@@ -145,11 +141,6 @@ const Search = () => {
       handleChunk(chunk);
     }).then(() => {
       setIsComplete();
-      setSearchResults(
-        (prev) =>
-          prev +
-          "\n-------------------------------------------------------------------------\n\n"
-      );
       setIsFetching(false);
       setReplyText("");
     });
@@ -162,8 +153,10 @@ const Search = () => {
           return (
             <div
               key={index}
-              className={`mb-4 ${
-                test.role === "model" ? "bg-red-300" : "bg-blue-300"
+              className={`mb-6 text-lg ${
+                test.role === "model"
+                  ? "bg-blue-300 text-left"
+                  : "bg-green-300 text-right"
               }`}
             >
               <p className="whitespace-pre-line text-black">{test.text}</p>
@@ -172,7 +165,7 @@ const Search = () => {
         })}
       </div>
       <div className="flex fixed bottom-0 mb-10 w-full justify-center">
-        <div className="w-[400px] flex items-center">
+        <div className="w-[600px] flex items-center">
           <input
             className="text-black w-[300px]"
             type="text"
@@ -180,16 +173,13 @@ const Search = () => {
             value={searchString}
           />
           <button
-            className="bg-blue-600 disabled:bg-gray-500"
+            className="bg-blue-600 disabled:bg-gray-500 mr-20"
             onClick={search}
             disabled={isFetching}
           >
             Search
           </button>
-          <button
-            className="bg-blue-600 disabled:bg-gray-500"
-            onClick={onGetChatHistory}
-          >
+          <button className="bg-orange-600 disabled:bg-gray-500">
             Get History
           </button>
         </div>
