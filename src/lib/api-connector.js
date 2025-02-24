@@ -129,3 +129,24 @@ export const clearTabHistory = async () => {
     console.error("Error in API-connecter/clearTabHistory", e);
   }
 };
+
+export const getChatHistory = async () => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/get-chat-history`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (!response.ok) {
+      const errorDetails = await response.json();
+      throw new Error(errorDetails.error);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (e) {
+    console.error("Error in API-connecter/clearTabHistory", e);
+  }
+}

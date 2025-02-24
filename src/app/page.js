@@ -6,10 +6,13 @@ import {
   fetchTabStream,
   setRedisCookies,
   clearTabHistory,
+  getChatHistory,
 } from "@/lib/api-connector";
 import TabButton from "@/components/side-drawer";
+import { get } from "http";
 
 const Search = () => {
+  const [testArray, setTestArray] = useState([]);
   const [searchString, setSearchString] = useState("");
   const [tabResults, setTabResults] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -91,14 +94,57 @@ const Search = () => {
     });
   };
 
+  function handleChunk(chunk) {
+    setTestArray((prev) => {
+      if (prev.length === 0) {
+        return [{ role: "model", text: chunk, isComplete: false }];
+      }
+      const newState = prev[prev.length - 1].isComplete
+        ? [...prev, { role: "model", text: chunk, isComplete: false }]
+        : [
+            ...prev.slice(0, -1),
+            {
+              role: "model",
+              text: prev[prev.length - 1].text + chunk,
+              isComplete: false,
+            },
+          ];
+
+      return newState;
+    });
+  }
+
+  function setIsComplete() {
+    setTestArray((prev) => {
+      return [
+        ...prev.slice(0, -1),
+        {
+          role: prev[prev.length - 1].role,
+          text: prev[prev.length - 1].text,
+          isComplete: true,
+        },
+      ];
+    });
+  }
+
+  async function onGetChatHistory() {
+    const history = await getChatHistory();
+    console.log(history);
+    // setTestArray(() => history);
+  }
+
   const search = async () => {
     if (isFetching) return;
+    setTestArray((prev) => {
+      return [...prev, { role: "user", text: searchString, isComplete: true }];
+    });
     setIsFetching(true);
     setSearchString("");
     await setRedisCookies(searchString, replyText);
     fetchStream((chunk) => {
-      setSearchResults((prev) => prev + chunk);
+      handleChunk(chunk);
     }).then(() => {
+      setIsComplete();
       setSearchResults(
         (prev) =>
           prev +
@@ -112,7 +158,18 @@ const Search = () => {
   return (
     <div className="flex flex-col w-screen min-h-screen items-center">
       <div className="flex flex-col flex-grow w-full max-w-[1000px] overflow-y-auto">
-        <p className="whitespace-pre-line">{searchResults}</p>
+        {testArray.map((test, index) => {
+          return (
+            <div
+              key={index}
+              className={`mb-4 ${
+                test.role === "model" ? "bg-red-300" : "bg-blue-300"
+              }`}
+            >
+              <p className="whitespace-pre-line text-black">{test.text}</p>
+            </div>
+          );
+        })}
       </div>
       <div className="flex fixed bottom-0 mb-10 w-full justify-center">
         <div className="w-[400px] flex items-center">
@@ -128,6 +185,12 @@ const Search = () => {
             disabled={isFetching}
           >
             Search
+          </button>
+          <button
+            className="bg-blue-600 disabled:bg-gray-500"
+            onClick={onGetChatHistory}
+          >
+            Get History
           </button>
         </div>
       </div>
