@@ -1,10 +1,9 @@
-import next from "next";
-
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const {
   connectIoRedis,
   getChatHistory,
-  storeChatMessage,
+  getTabHistory,
+  storeTabMessage,
 } = require("../../src/lib/ioredis");
 
 export default async function handler(req, res) {
@@ -26,6 +25,8 @@ export default async function handler(req, res) {
   try {
     const searchString = await client.get(sessionId);
     const chatHistory = await getChatHistory(sessionId);
+    const tabHistory = await getTabHistory(sessionId);
+    const history = chatHistory.concat(tabHistory);
     const replyTo = await client.get(`replyTo:${sessionId}`);
 
     if (!searchString) {
@@ -41,14 +42,17 @@ export default async function handler(req, res) {
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",
       systemInstruction:
-        "You are a friendly AI assistant. You should answer in a relaxed, conversational tone, but remain informative and helpful. If the question starts with a quote delimited by the # key, then your response should be based off of the text in that quote.",
+        "You are a friendly AI assistant that provides succinct additional information about text. You should answer in a relaxed, conversational tone, but remain informative and helpful.  You should also be consice and keep things brief. If the question starts with a quote delimited by the # key, then your response should be based off of the text in that quote.",
     });
 
     const chat = model.startChat({
-      history: chatHistory,
+      history: history,
     });
 
-    const nextMessage = replyTo ? `#${replyTo}.#\n` : searchString;
+    const nextMessage = replyTo
+      ? `#${replyTo}.#\n${searchString}`
+      : searchString;
+
 
     const result = await chat.sendMessageStream(nextMessage);
 
@@ -61,7 +65,7 @@ export default async function handler(req, res) {
       res.flush();
     }
 
-    storeChatMessage(sessionId, "model", llmResponse);
+    storeTabMessage(sessionId, "model", llmResponse);
     await client.set(`replyTo:${sessionId}`, "");
     const newReplyTo = await client.get(`replyTo:${sessionId}`);
 

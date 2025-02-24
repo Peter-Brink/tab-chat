@@ -36,10 +36,41 @@ async function storeChatMessage(sessionId, role, message) {
   await client.expire(key, 3600);
 }
 
+async function storeTabMessage(sessionId, role, message) {
+  const key = `tab:${sessionId}`;
+
+  await client.ltrim(key, -30, -1);
+
+  await client.rpush(
+    key,
+    JSON.stringify({ role: role, parts: [{ text: message }] })
+  );
+
+  await client.expire(key, 3600);
+}
+
+async function clearTabHistory(sessionId) {
+  const key = `tab:${sessionId}`;
+  await client.del(key);
+}
+
+async function getTabHistory(sessionId) {
+  const key = `tab:${sessionId}`;
+  const messages = await client.lrange(key, 0, -1);
+  return messages.map((msg) => JSON.parse(msg));
+}
+
 async function getChatHistory(sessionId) {
   const key = `session:${sessionId}`;
   const messages = await client.lrange(key, 0, -1);
   return messages.map((msg) => JSON.parse(msg));
 }
 
-module.exports = { connectIoRedis, storeChatMessage, getChatHistory };
+module.exports = {
+  connectIoRedis,
+  storeChatMessage,
+  getChatHistory,
+  storeTabMessage,
+  getTabHistory,
+  clearTabHistory,
+};

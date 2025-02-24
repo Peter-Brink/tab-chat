@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const {
   connectIoRedis,
   storeChatMessage,
-  getChatHistory,
+  storeTabMessage,
 } = require("../../src/lib/ioredis");
 
 export default async function handler(req, res) {
@@ -14,6 +14,7 @@ export default async function handler(req, res) {
     if (!sessionId) {
       sessionId = uuidv4();
 
+      //TODO: Add Secure to allow only HTTPS
       res.setHeader(
         "Set-Cookie",
         `sessionId=${sessionId}; HttpOnly; Max-Age=3600; SameSite=Strict; Path=/`
@@ -26,14 +27,23 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No search string provided" });
     }
 
+    const { replyTo } = req.body;
+    const { tab } = req.body;
+
     try {
       const client = await connectIoRedis();
 
       await client.set(sessionId, searchString);
-      await storeChatMessage(sessionId, "user", searchString);
+      if (!tab) {
+        await storeChatMessage(sessionId, "user", searchString);
+      } else {
+        await storeTabMessage(sessionId, "user", searchString);
+      }
       await client.expire(sessionId, 3600);
-      // const chats = await getChatHistory(sessionId);
-      // console.log("Chat history:", JSON.stringify(chats));
+      if (replyTo) {
+        await client.set(`replyTo:${sessionId}`, replyTo);
+        await client.expire(`replyTo:${sessionId}`, 3600);
+      }
       res
         .status(200)
         .json({ message: "Search string stored and session ID set." });
