@@ -17,6 +17,7 @@ export default {
         gradientBlue1: "#0057D1",
         gradientBlue2: "#0012B6",
         popupGrey: "#171616",
+        myCodeBackground: "#1a1a1a",
       },
     },
   },

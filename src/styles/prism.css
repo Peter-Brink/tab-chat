@@ -1,0 +1,70 @@
+/* Custom background and padding */
+pre[class*="language-"] {
+  background: #1a1a1a;
+  color: #cbd5e1;
+  border-radius: 8px;
+  padding-left: 1.5rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  overflow-x: auto;
+  font-size: 14px;
+  line-height: 1.5; /* Ensure lines are spaced correctly */
+}
+
+/* Code block and inline code */
+code[class*="language-"],
+pre[class*="language-"] {
+  font-family: "Fira Code", monospace;
+  color: #cbd5e1;
+  white-space: pre-wrap; /* Prevent horizontal overflow */
+}
+
+/* Specific styling for `prose` elements */
+.prose pre[class*="language-"],
+.prose code[class*="language-"] {
+  font-size: 14px; /* Adjust size for readability */
+  font-family: "Fira Code", monospace;
+  color: #FFFFFF;
+}
+
+/* Comment styling */
+.token.comment {
+  color: #7B7B7B;
+  font-style: italic;
+}
+
+/* Keyword styling */
+.token.keyword {
+  color: #2AC6FF;
+  font-weight: bold;
+}
+
+/* String styling */
+.token.string {
+  color: #ED7CFF;
+}
+
+/* Number styling */
+.token.number {
+  color: #3BC7A6;
+}
+
+/* Operator styling */
+.token.operator {
+  color: #d4d4d4;
+}
+
+/* Function styling */
+.token.function {
+  color: #007BFF;
+}
+
+/* CSS class and selector styling */
+.token.selector {
+  color: #e36209;
+}
+
+/* Regular Expression styling */
+.token.regex {
+  color: #e9b200;
+}

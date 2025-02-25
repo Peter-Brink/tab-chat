@@ -6,8 +6,8 @@ export default function ({
   tab = false,
 }) {
   return (
-    <div className="absolute bottom-8 rounded-3xl w-full max-w-[1000px]">
-      <div className="flex justify-center">
+    <div className="absolute bottom-0 bg-transparent w-full">
+      <div className="flex justify-center mb-8 rounded-3xl">
         <div
           className={`flex flex-grow h-[88px] items-end rounded-3xl pl-6 pr-4 pt-4 pb-4 ${
             tab ? "bg-white" : "bg-myMessageGrey"

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { setRedisCookies, fetchTabStream } from "@/lib/network/api-connector";
+import MarkdownConverter from "@/lib/utility/markdown-converter";
 
 const SideDrawer = ({ isDrawerOpen, tabText, tabResults, setTabResults }) => {
   const [searchString, setSearchString] = useState("");
@@ -21,19 +22,18 @@ const SideDrawer = ({ isDrawerOpen, tabText, tabResults, setTabResults }) => {
 
   return (
     <div className="flex flex-col flex-grow mt-20 p-7">
-      <div className="flex flex-col flex-grow overflow-auto items-center">
+      <div className="flex prose prose-invert flex-col flex-grow overflow-auto items-center">
         {tabText && (
           <div>
-            <p className="mb-4 text-xl">Replying to:</p>
             <p className="text-lg font-bold transition-all duration-500 ease-in-out text-myTextGrey">
               "{tabText}"
             </p>
           </div>
         )}
         {tabResults && (
-          <p className="text-base mt-10 leading-7 transition-all duration-500 ease-in-out text-myTextGrey">
-            {tabResults}
-          </p>
+          <div className="text-base mt-10 leading-7 transition-all duration-500 ease-in-out text-myTextGrey">
+            <MarkdownConverter input={tabResults} />
+          </div>
         )}
       </div>
       <div className="flex items-center w-full">

@@ -19,3 +19,21 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.prose p code {
+  @apply text-sm text-myTextGrey bg-myCodeBackground px-1 py-0.5 rounded-md;
+}
+
+.prose code::before,
+.prose code::after {
+  content: none;
+}
+
+.scrollable {
+  -ms-overflow-style: none;  /* For Internet Explorer */
+  scrollbar-width: none;  /* For Firefox */
+}
+
+.scrollable::-webkit-scrollbar {
+  display: none;  /* For Chrome, Safari, and Opera */
+}
