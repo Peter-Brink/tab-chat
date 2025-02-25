@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+
 import {
   fetchStream,
   setRedisCookies,
@@ -24,7 +25,23 @@ const Search = () => {
   const [tabText, setTabText] = useState("");
   const [tabResults, setTabResults] = useState("");
 
+  const [shouldAllowTab, setShouldAllowTab] = useState(true);
+  const [screenSizeAllowed, setScreenSizeAllowed] = useState(true);
+
   const popupRef = useRef(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setShouldAllowTab(window.innerWidth >= 1230);
+      setScreenSizeAllowed(window.innerWidth >= 745);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     retrieveChatHistory();
@@ -117,37 +134,39 @@ const Search = () => {
     setMessageArray(() => formattedHistory);
   }
 
-  return (
+  return screenSizeAllowed ? (
     <div className="flex w-screen h-screen items-center overflow-hidden bg-myBackgroundGrey">
-      <div className="flex flex-col h-screen flex-grow items-center pr-32 pl-32">
-        <div className="flex flex-col mt-10 mb-24 prose prose-p:m-3 prose-code:text-gray-300 w-full max-w-[1000px] overflow-y-auto">
-          {messageArray.map((message, index) => {
-            return (
-              <div
-                key={index}
-                className={`flex mb-6 items-center ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
+      <div className="flex flex-col h-screen flex-grow items-center pr-12 pl-12">
+        <div className="relative max-w-[1000px] w-full flex h-full">
+          <div className="mt-20 mb-24 prose prose-invert prose-p:m-3 prose-code:text-gray-300 w-full max-w-[1000px] overflow-auto scrollable">
+            {messageArray.map((message, index) => {
+              return (
                 <div
-                  className={`text-base leading-7 text-myTextGrey ${
-                    message.role === "model"
-                      ? "text-left text-[17px] rounded-xl"
-                      : "bg-myMessageGrey rounded-3xl pl-4 pr-4"
+                  key={index}
+                  className={`flex mb-24 items-center ${
+                    message.role === "user" ? "justify-end" : "justify-start"
                   }`}
                 >
-                  <MarkdownConverter input={message.text} />
+                  <div
+                    className={`text-base leading-7 text-myTextGrey ${
+                      message.role === "model"
+                        ? "text-left text-[17px] rounded-xl"
+                        : "bg-myMessageGrey rounded-3xl pl-4 pr-4"
+                    }`}
+                  >
+                    <MarkdownConverter input={message.text} />
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+          <SearchBar
+            setSearchString={setSearchString}
+            searchString={searchString}
+            handleSearch={handleSearch}
+            isFetching={isFetching}
+          />
         </div>
-        <SearchBar
-          setSearchString={setSearchString}
-          searchString={searchString}
-          handleSearch={handleSearch}
-          isFetching={isFetching}
-        />
       </div>
       <div
         className={`flex bg-myMessageGrey h-screen transition-all duration-500 ease-in-out rounded-l-3xl ${
@@ -173,31 +192,45 @@ const Search = () => {
             className="pl-4 pr-4 pt-1 pb-1 flex items-center justify-center border-2 border-myMessageGrey bg-popupGrey hover:bg-myMessageGrey rounded-2xl"
             onClick={handlePopupReplyButtonClick}
           >
-            Reply
+            Quote
           </div>
-          <div
-            className="pl-4 pr-4 pt-1 pb-1 flex items-center justify-center border-2 border-myMessageGrey bg-popupGrey hover:bg-myMessageGrey rounded-2xl"
-            onClick={handlePopupTabButtonClick}
-          >
-            Tab
-          </div>
+          {shouldAllowTab && (
+            <div
+              className="pl-4 pr-4 pt-1 pb-1 flex items-center justify-center border-2 border-myMessageGrey bg-popupGrey hover:bg-myMessageGrey rounded-2xl"
+              onClick={handlePopupTabButtonClick}
+            >
+              Tab
+            </div>
+          )}
         </div>
       )}
 
-      <button
-        onClick={toggleTabDrawer}
-        className={`fixed top-5 cursor-pointer right-10 bg-myTextGrey text-black hover:text-myTextGrey pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none hover:shadow-2xl transition-all duration-300 ease-in-out ${
-          isDrawerOpen ? "hover:bg-myBackgroundGrey" : "hover:bg-myMessageGrey"
-        }`}
-      >
-        {isDrawerOpen ? "Close" : "Tab"}
-      </button>
+      {shouldAllowTab && (
+        <button
+          onClick={toggleTabDrawer}
+          className={`fixed top-5 cursor-pointer right-10 bg-myTextGrey text-black hover:text-myTextGrey pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none hover:shadow-2xl transition-all duration-300 ease-in-out ${
+            isDrawerOpen
+              ? "hover:bg-myBackgroundGrey"
+              : "hover:bg-myMessageGrey"
+          }`}
+        >
+          {isDrawerOpen ? "Close" : "Tab"}
+        </button>
+      )}
 
       <button
         className={`fixed top-5 cursor-pointer left-10 bg-myTextGrey text-black hover:bg-myMessageGrey hover:text-myTextGrey pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none transition-all duration-300 ease-in-out`}
       >
         Clear chat
       </button>
+    </div>
+  ) : (
+    <div className="flex flex-col items-center justify-start w-screen h-screen bg-myBackgroundGrey">
+      <h1 className="text-5xl text-myTextGrey mb-6 mt-32">Sorry!</h1>
+      <p className="text-lg pl-8 pr-8 mb-4 text-center text-myTextGrey">
+        tabChat is not currently available on this screen size.
+      </p>
+      <p className="text-lg text-myTextGrey">please use a larger device.</p>
     </div>
   );
 };
