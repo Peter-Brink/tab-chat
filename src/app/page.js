@@ -9,6 +9,7 @@ import {
 } from "@/lib/network/api-connector";
 import SideDrawer from "@/components/side-drawer";
 import MarkdownConverter from "@/lib/utility/markdown-converter";
+import SearchBar from "@/components/search-bar";
 
 const Search = () => {
   const [messageArray, setMessageArray] = useState([]);
@@ -37,7 +38,7 @@ const Search = () => {
           setSelectedText(selection.toString());
 
           setPopupPosition({
-            top: rect.top + window.scrollY + rect.height + 10,
+            top: rect.top + window.scrollY - 44,
             left: rect.left + window.scrollX,
           });
         } else {
@@ -92,7 +93,7 @@ const Search = () => {
   }
 
   const handleSearch = async () => {
-    if (isFetching) return;
+    if (isFetching || !searchString) return;
     setMessageArray((prev) => {
       return [...prev, { role: "user", text: searchString }];
     });
@@ -117,46 +118,42 @@ const Search = () => {
   }
 
   return (
-    <div className="flex w-screen h-screen items-center overflow-hidden bg-white">
-      <div className="flex flex-col h-screen flex-grow items-center">
-        <div className="flex flex-col mt-10 mb-24 prose prose-code:text-gray-300 w-full max-w-[1000px] overflow-y-auto">
-          {messageArray.map((test, index) => {
+    <div className="flex w-screen h-screen items-center overflow-hidden bg-myBackgroundGrey">
+      <div className="flex flex-col h-screen flex-grow items-center pr-32 pl-32">
+        <div className="flex flex-col mt-10 mb-24 prose prose-p:m-3 prose-code:text-gray-300 w-full max-w-[1000px] overflow-y-auto">
+          {messageArray.map((message, index) => {
             return (
               <div
                 key={index}
-                className={`mb-6 text-lg ${
-                  test.role === "model"
-                    ? "text-left text-white pl-10 pr-10 bg-purple-800 rounded-xl"
-                    : "text-right bg-white rounded-xl text-black pl-10 pr-10"
+                className={`flex mb-6 items-center ${
+                  message.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                <MarkdownConverter input={test.text} />
+                <div
+                  className={`text-base leading-7 text-myTextGrey ${
+                    message.role === "model"
+                      ? "text-left rounded-xl"
+                      : "bg-myMessageGrey rounded-3xl pl-4 pr-4"
+                  }`}
+                >
+                  <MarkdownConverter input={message.text} />
+                </div>
               </div>
             );
           })}
         </div>
-        <div className="absolute bottom-0 bg-gray-300">
-          <div className=" h-10 flex justify-center mb-10 ml-10 mr-10 mt-4">
-            <input
-              className="text-black w-[300px] rounded-2xl mr-4 p-4"
-              type="text"
-              onChange={(e) => setSearchString(e.target.value)}
-              value={searchString}
-            />
-            <button
-              className="bg-blue-600 disabled:bg-gray-500 w-20 rounded-2xl"
-              onClick={handleSearch}
-              disabled={isFetching}
-            >
-              Search
-            </button>
-          </div>
-        </div>
+        <SearchBar
+          setSearchString={setSearchString}
+          searchString={searchString}
+          handleSearch={handleSearch}
+          isFetching={isFetching}
+        />
       </div>
       <div
-        className={`flex bg-gray-400 h-screen transition-all duration-500 ease-in-out ${
-          isDrawerOpen ? "w-[400px]" : "w-0"
+        className={`flex bg-myMessageGrey h-screen transition-all duration-500 ease-in-out rounded-l-3xl ${
+          isDrawerOpen ? "w-[500px]" : "w-0"
         }`}
+        style={{ boxShadow: "-5px 0px 10px rgba(0, 0, 0, 0.2)" }}
       >
         <SideDrawer
           isDrawerOpen={isDrawerOpen}
@@ -169,17 +166,17 @@ const Search = () => {
       {selectedText && (
         <div
           ref={popupRef}
-          className="absolute flex items-center justify-center cursor-pointer bg-gray-400 text-black w-[140px] h-[30px] rounded shadow-lg"
+          className="absolute flex items-center justify-center cursor-pointer text-myTextGrey w-[140px] h-[30px] rounded-xl shadow-lg space-x-2"
           style={{ top: popupPosition.top, left: popupPosition.left }}
         >
           <div
-            className="w-[70px] h-[30px] flex items-center justify-center hover:bg-gray-600 hover:text-white rounded"
+            className="pl-4 pr-4 pt-1 pb-1 flex items-center justify-center border-2 border-myMessageGrey bg-popupGrey hover:bg-myMessageGrey rounded-2xl"
             onClick={handlePopupReplyButtonClick}
           >
             Reply
           </div>
           <div
-            className="w-[70px] h-[30px] flex items-center justify-center hover:bg-gray-600 hover:text-white rounded"
+            className="pl-4 pr-4 pt-1 pb-1 flex items-center justify-center border-2 border-myMessageGrey bg-popupGrey hover:bg-myMessageGrey rounded-2xl"
             onClick={handlePopupTabButtonClick}
           >
             Tab
@@ -189,9 +186,16 @@ const Search = () => {
 
       <button
         onClick={toggleTabDrawer}
-        className={`absolute top-5 right-10 bg-blue-600 text-white p-3 rounded-lg shadow-lg focus:outline-none transition-all duration-300 ease-in-out`}
+        className={`fixed top-5 cursor-pointer right-10 bg-gradient-to-b from-gradientBlue1 to-gradientBlue2 text-myTextGrey pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none hover:shadow-2xl`}
       >
-        Tab
+        {isDrawerOpen ? "Close" : "Tab"}
+      </button>
+
+      <button
+        onClick={toggleTabDrawer}
+        className={`fixed top-5 cursor-pointer left-10 bg-myTextGrey text-black hover:bg-myMessageGrey hover:text-myTextGrey pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none`}
+      >
+        Clear chat
       </button>
     </div>
   );

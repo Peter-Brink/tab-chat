@@ -11,6 +11,12 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        myBackgroundGrey: "#272727",
+        myMessageGrey: "#444444",
+        myTextGrey: "#E5E5E5",
+        gradientBlue1: "#0057D1",
+        gradientBlue2: "#0012B6",
+        popupGrey: "#171616",
       },
     },
   },
