@@ -20,8 +20,8 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.prose p code {
-  @apply text-sm text-myTextGrey bg-myCodeBackground px-1 py-0.5 rounded-md;
+.prose code {
+  @apply text-sm text-myTextGrey pl-2 pr-2 pt-1 pb-1 ml-1 mr-1 bg-myCodeBackground px-1 py-0.5 rounded-md;
 }
 
 .prose code::before,
