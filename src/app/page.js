@@ -139,26 +139,28 @@ const Search = () => {
       <div className="flex flex-col h-screen flex-grow items-center pr-12 pl-12">
         <div className="relative max-w-[1000px] w-full flex h-full">
           <div className="mt-20 mb-24 prose prose-invert prose-p:m-3 prose-code:text-gray-300 w-full max-w-[1000px] overflow-auto scrollable">
-            {messageArray.map((message, index) => {
-              return (
-                <div
-                  key={index}
-                  className={`flex mb-24 items-center ${
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
+            <div className="mb-24">
+              {messageArray.map((message, index) => {
+                return (
                   <div
-                    className={`text-base leading-7 text-myTextGrey ${
-                      message.role === "model"
-                        ? "text-left text-[17px] rounded-xl"
-                        : "bg-myMessageGrey rounded-3xl pl-4 pr-4"
+                    key={index}
+                    className={`flex mb-7 items-center ${
+                      message.role === "user" ? "justify-end" : "justify-start"
                     }`}
                   >
-                    <MarkdownConverter input={message.text} />
+                    <div
+                      className={`text-base leading-7 text-myTextGrey ${
+                        message.role === "model"
+                          ? "text-left text-[17px] rounded-xl"
+                          : "bg-myMessageGrey rounded-3xl pl-4 pr-4"
+                      }`}
+                    >
+                      <MarkdownConverter input={message.text} />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
           <SearchBar
             setSearchString={setSearchString}
