@@ -7,7 +7,7 @@ import {
   clearTabHistory,
   getChatHistory,
 } from "@/lib/network/api-connector";
-import TabButton from "@/components/side-drawer";
+import SideDrawer from "@/components/side-drawer";
 import MarkdownConverter from "@/lib/utility/markdown-converter";
 
 const Search = () => {
@@ -117,39 +117,53 @@ const Search = () => {
   }
 
   return (
-    <div className="flex flex-col w-screen min-h-screen items-center">
-      <div className="flex mt-10 mb-24 flex-col prose prose-code:text-gray-300 w-full max-w-[1000px] overflow-y-auto">
-        {messageArray.map((test, index) => {
-          return (
-            <div
-              key={index}
-              className={`mb-6 text-lg ${
-                test.role === "model"
-                  ? "text-left text-white pl-10 pr-10 bg-purple-800 rounded-xl"
-                  : "text-right bg-white rounded-xl text-black pl-10 pr-10"
-              }`}
-            >
-              <MarkdownConverter input={test.text} />
-            </div>
-          );
-        })}
-      </div>
-      <div className="flex fixed bottom-0 bg-gray-500 justify-center">
-        <div className=" h-10 flex justify-center mb-10 ml-10 mr-10 mt-4">
-          <input
-            className="text-black w-[300px] rounded-2xl mr-4 p-4"
-            type="text"
-            onChange={(e) => setSearchString(e.target.value)}
-            value={searchString}
-          />
-          <button
-            className="bg-blue-600 disabled:bg-gray-500 w-20 rounded-2xl"
-            onClick={handleSearch}
-            disabled={isFetching}
-          >
-            Search
-          </button>
+    <div className="flex w-screen h-screen items-center overflow-hidden bg-white">
+      <div className="flex flex-col h-screen flex-grow items-center">
+        <div className="flex flex-col mt-10 mb-24 prose prose-code:text-gray-300 w-full max-w-[1000px] overflow-y-auto">
+          {messageArray.map((test, index) => {
+            return (
+              <div
+                key={index}
+                className={`mb-6 text-lg ${
+                  test.role === "model"
+                    ? "text-left text-white pl-10 pr-10 bg-purple-800 rounded-xl"
+                    : "text-right bg-white rounded-xl text-black pl-10 pr-10"
+                }`}
+              >
+                <MarkdownConverter input={test.text} />
+              </div>
+            );
+          })}
         </div>
+        <div className="absolute bottom-0 bg-gray-300">
+          <div className=" h-10 flex justify-center mb-10 ml-10 mr-10 mt-4">
+            <input
+              className="text-black w-[300px] rounded-2xl mr-4 p-4"
+              type="text"
+              onChange={(e) => setSearchString(e.target.value)}
+              value={searchString}
+            />
+            <button
+              className="bg-blue-600 disabled:bg-gray-500 w-20 rounded-2xl"
+              onClick={handleSearch}
+              disabled={isFetching}
+            >
+              Search
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        className={`flex bg-gray-400 h-screen transition-all duration-500 ease-in-out ${
+          isDrawerOpen ? "w-[400px]" : "w-0"
+        }`}
+      >
+        <SideDrawer
+          isDrawerOpen={isDrawerOpen}
+          tabText={tabText}
+          tabResults={tabResults}
+          setTabResults={setTabResults}
+        />
       </div>
 
       {selectedText && (
@@ -173,16 +187,9 @@ const Search = () => {
         </div>
       )}
 
-      <TabButton
-        isDrawerOpen={isDrawerOpen}
-        tabText={tabText}
-        tabResults={tabResults}
-        setTabResults={setTabResults}
-      />
-
       <button
         onClick={toggleTabDrawer}
-        className={`fixed top-5 right-5 bg-blue-600 text-white p-3 rounded-lg shadow-lg focus:outline-none transition-all duration-300 ease-in-out z-`}
+        className={`absolute top-5 right-10 bg-blue-600 text-white p-3 rounded-lg shadow-lg focus:outline-none transition-all duration-300 ease-in-out`}
       >
         Tab
       </button>
