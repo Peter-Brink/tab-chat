@@ -9,6 +9,7 @@ import {
   getChatHistory,
 } from "@/lib/api-connector";
 import TabButton from "@/components/side-drawer";
+import MarkdownConverter from "@/lib/markdown-converter";
 
 const Search = () => {
   const [testArray, setTestArray] = useState([]);
@@ -18,9 +19,9 @@ const Search = () => {
   const [selectedText, setSelectedText] = useState("");
   const [replyText, setReplyText] = useState("");
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-  const popupRef = useRef(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [tabText, setTabText] = useState("");
+  const popupRef = useRef(null);
 
   // Toggle drawer visibility
   const toggleDrawer = async (e) => {
@@ -90,41 +91,26 @@ const Search = () => {
 
   function handleChunk(chunk) {
     setTestArray((prev) => {
-      if (prev.length === 0) {
-        return [{ role: "model", text: chunk, isComplete: false }];
-      }
-      const newState = prev[prev.length - 1].isComplete
-        ? [...prev, { role: "model", text: chunk, isComplete: false }]
-        : [
-            ...prev.slice(0, -1),
-            {
-              role: "model",
-              text: prev[prev.length - 1].text + chunk,
-              isComplete: false,
-            },
-          ];
+      const newState =
+        prev[prev.length - 1].role === "user"
+          ? [...prev, { role: "model", text: chunk }]
+          : [
+              ...prev.slice(0, -1),
+              {
+                role: "model",
+                text: prev[prev.length - 1].text + chunk,
+              },
+            ];
 
       return newState;
     });
   }
 
-  function setIsComplete() {
-    setTestArray((prev) => {
-      return [
-        ...prev.slice(0, -1),
-        {
-          role: prev[prev.length - 1].role,
-          text: prev[prev.length - 1].text,
-          isComplete: true,
-        },
-      ];
-    });
-  }
-
   async function retrieveChatHistory() {
     const history = await getChatHistory();
+    if (!history) return;
     const formattedHistory = history.map((item) => {
-      return { role: item.role, text: item.parts[0].text, isComplete: true };
+      return { role: item.role, text: item.parts[0].text };
     });
     setTestArray(() => formattedHistory);
   }
@@ -132,7 +118,7 @@ const Search = () => {
   const search = async () => {
     if (isFetching) return;
     setTestArray((prev) => {
-      return [...prev, { role: "user", text: searchString, isComplete: true }];
+      return [...prev, { role: "user", text: searchString }];
     });
     setIsFetching(true);
     setSearchString("");
@@ -140,7 +126,6 @@ const Search = () => {
     fetchStream((chunk) => {
       handleChunk(chunk);
     }).then(() => {
-      setIsComplete();
       setIsFetching(false);
       setReplyText("");
     });
@@ -148,39 +133,36 @@ const Search = () => {
 
   return (
     <div className="flex flex-col w-screen min-h-screen items-center">
-      <div className="flex flex-col flex-grow w-full max-w-[1000px] overflow-y-auto">
+      <div className="flex mt-10 mb-24 flex-col prose prose-code:text-gray-300 w-full max-w-[1000px] overflow-y-auto">
         {testArray.map((test, index) => {
           return (
             <div
               key={index}
               className={`mb-6 text-lg ${
                 test.role === "model"
-                  ? "bg-blue-300 text-left"
-                  : "bg-green-300 text-right"
+                  ? "text-left text-white pl-10 pr-10 bg-purple-800 rounded-xl"
+                  : "text-right bg-white rounded-xl text-black pl-10 pr-10"
               }`}
             >
-              <p className="whitespace-pre-line text-black">{test.text}</p>
+              <MarkdownConverter input={test.text} />
             </div>
           );
         })}
       </div>
-      <div className="flex fixed bottom-0 mb-10 w-full justify-center">
-        <div className="w-[600px] flex items-center">
+      <div className="flex fixed bottom-0 mb-10 justify-center">
+        <div className=" h-10 flex justify-center">
           <input
-            className="text-black w-[300px]"
+            className="text-black w-[300px] rounded-2xl mr-4 p-4"
             type="text"
             onChange={(e) => setSearchString(e.target.value)}
             value={searchString}
           />
           <button
-            className="bg-blue-600 disabled:bg-gray-500 mr-20"
+            className="bg-blue-600 disabled:bg-gray-500 w-20 rounded-2xl"
             onClick={search}
             disabled={isFetching}
           >
             Search
-          </button>
-          <button className="bg-orange-600 disabled:bg-gray-500">
-            Get History
           </button>
         </div>
       </div>
