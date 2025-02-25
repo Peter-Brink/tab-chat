@@ -9,7 +9,7 @@ const SideDrawer = ({ isDrawerOpen, tabText, tabResults, setTabResults }) => {
   const [tabIsFetching, setTabIsFetching] = useState(false);
 
   async function searchTab() {
-    if (tabIsFetching) return;
+    if (tabIsFetching || !searchString) return;
     setTabIsFetching(true);
     setSearchString("");
     await setRedisCookies(searchString, tabText, true);
@@ -19,6 +19,13 @@ const SideDrawer = ({ isDrawerOpen, tabText, tabResults, setTabResults }) => {
       setTabIsFetching(false);
     });
   }
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault(); // Prevents creating a new line in the textarea
+      searchTab(); // Trigger the submit action
+    }
+  };
 
   return (
     <div className="flex flex-col flex-grow mt-20 p-7">
@@ -40,6 +47,7 @@ const SideDrawer = ({ isDrawerOpen, tabText, tabResults, setTabResults }) => {
         <input
           className="text-black h-10 rounded-2xl flex-grow mr-4 p-4 focus:outline-none bg-myTextGrey"
           type="text"
+          onKeyDown={handleKeyDown}
           placeholder="Get more context..."
           onChange={(e) => setSearchString(e.target.value)}
           value={searchString}

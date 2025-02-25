@@ -2,6 +2,7 @@ export default function ({
   setSearchString,
   searchString,
   handleSearch,
+  handleKeyDown,
   isFetching,
   tab = false,
 }) {
@@ -16,6 +17,7 @@ export default function ({
           <textarea
             placeholder="Ask away..."
             autoCapitalize="sentences"
+            onKeyDown={handleKeyDown}
             className={`text-myTextgrey placeholder:text-myTextGrey text-mytextGrey text-xl w-full h-full focus:outline-none resize-none mr-4 ${
               tab ? "bg-white" : "bg-myMessageGrey"
             }`}

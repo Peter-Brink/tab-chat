@@ -125,6 +125,13 @@ const Search = () => {
     });
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault(); // Prevents creating a new line in the textarea
+      handleSearch(); // Trigger the submit action
+    }
+  };
+
   async function retrieveChatHistory() {
     const history = await getChatHistory();
     if (!history) return;
@@ -166,6 +173,7 @@ const Search = () => {
             setSearchString={setSearchString}
             searchString={searchString}
             handleSearch={handleSearch}
+            handleKeyDown={handleKeyDown}
             isFetching={isFetching}
           />
         </div>
