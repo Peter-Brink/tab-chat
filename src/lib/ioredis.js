@@ -33,7 +33,7 @@ async function storeChatMessage(sessionId, role, message) {
     JSON.stringify({ role: role, parts: [{ text: message }] })
   );
 
-  await client.expire(key, 3600);
+  await client.expire(key, 86400);
 }
 
 async function storeTabMessage(sessionId, role, message) {
@@ -46,7 +46,7 @@ async function storeTabMessage(sessionId, role, message) {
     JSON.stringify({ role: role, parts: [{ text: message }] })
   );
 
-  await client.expire(key, 3600);
+  await client.expire(key, 86400);
 }
 
 async function clearTabHistory(sessionId) {
