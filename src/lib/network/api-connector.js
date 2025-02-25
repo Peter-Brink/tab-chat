@@ -84,7 +84,7 @@ export const fetchTabStream = async (onNewData) => {
 
 export const setRedisCookies = async (searchString, replyTo, tab = false) => {
   try {
-    let jsonBody = JSON.stringify({ searchString: searchString });
+    let jsonBody = JSON.stringify({ tab: tab, searchString: searchString });
 
     if (replyTo && replyTo.trim().length > 0) {
       jsonBody = JSON.stringify({

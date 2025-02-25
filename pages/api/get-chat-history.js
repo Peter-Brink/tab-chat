@@ -1,6 +1,5 @@
 const {
   connectIoRedis,
-  clearTabHistory,
   getChatHistory,
 } = require("../../src/lib/storage/ioredis");
 

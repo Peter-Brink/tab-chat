@@ -66,7 +66,6 @@ export default async function handler(req, res) {
 
     storeTabMessage(sessionId, "model", llmResponse);
     await client.set(`replyTo:${sessionId}`, "");
-    const newReplyTo = await client.get(`replyTo:${sessionId}`);
 
     res.write(`data: ${JSON.stringify("[DONE]")}\n\n`);
     res.flush();
