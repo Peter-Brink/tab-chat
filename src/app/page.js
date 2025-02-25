@@ -132,7 +132,7 @@ const Search = () => {
                 <div
                   className={`text-base leading-7 text-myTextGrey ${
                     message.role === "model"
-                      ? "text-left rounded-xl"
+                      ? "text-left text-[17px] rounded-xl"
                       : "bg-myMessageGrey rounded-3xl pl-4 pr-4"
                   }`}
                 >
@@ -186,14 +186,15 @@ const Search = () => {
 
       <button
         onClick={toggleTabDrawer}
-        className={`fixed top-5 cursor-pointer right-10 bg-gradient-to-b from-gradientBlue1 to-gradientBlue2 text-myTextGrey pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none hover:shadow-2xl`}
+        className={`fixed top-5 cursor-pointer right-10 bg-myTextGrey text-black hover:text-myTextGrey pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none hover:shadow-2xl transition-all duration-300 ease-in-out ${
+          isDrawerOpen ? "hover:bg-myBackgroundGrey" : "hover:bg-myMessageGrey"
+        }`}
       >
         {isDrawerOpen ? "Close" : "Tab"}
       </button>
 
       <button
-        onClick={toggleTabDrawer}
-        className={`fixed top-5 cursor-pointer left-10 bg-myTextGrey text-black hover:bg-myMessageGrey hover:text-myTextGrey pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none`}
+        className={`fixed top-5 cursor-pointer left-10 bg-myTextGrey text-black hover:bg-myMessageGrey hover:text-myTextGrey pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none transition-all duration-300 ease-in-out`}
       >
         Clear chat
       </button>

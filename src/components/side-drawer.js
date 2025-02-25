@@ -20,15 +20,18 @@ const SideDrawer = ({ isDrawerOpen, tabText, tabResults, setTabResults }) => {
   }
 
   return (
-    <div className="flex flex-col flex-grow mt-20 p-4">
+    <div className="flex flex-col flex-grow mt-20 p-7">
       <div className="flex flex-col flex-grow overflow-auto items-center">
         {tabText && (
-          <p className="text-lg transition-all duration-500 ease-in-out text-myTextGrey">
-            "{tabText}"
-          </p>
+          <div>
+            <p className="mb-4 text-xl">Replying to:</p>
+            <p className="text-lg font-bold transition-all duration-500 ease-in-out text-myTextGrey">
+              "{tabText}"
+            </p>
+          </div>
         )}
         {tabResults && (
-          <p className="text-lg mt-20 transition-all duration-500 ease-in-out text-myTextGrey">
+          <p className="text-base mt-10 leading-7 transition-all duration-500 ease-in-out text-myTextGrey">
             {tabResults}
           </p>
         )}
@@ -37,6 +40,7 @@ const SideDrawer = ({ isDrawerOpen, tabText, tabResults, setTabResults }) => {
         <input
           className="text-black h-10 rounded-2xl flex-grow mr-4 p-4 focus:outline-none bg-myTextGrey"
           type="text"
+          placeholder="Get more context..."
           onChange={(e) => setSearchString(e.target.value)}
           value={searchString}
         />
