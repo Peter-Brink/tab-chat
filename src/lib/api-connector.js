@@ -139,14 +139,18 @@ export const getChatHistory = async () => {
       }
     );
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errorDetails = await response.json();
-      throw new Error(errorDetails.error);
+      if (data.code === 0) {
+        console.log("No session ID found in cookies");
+        return;
+      }
+      throw new Error(data.error);
     }
 
-    const data = await response.json();
     return data;
   } catch (e) {
     console.error("Error in API-connecter/clearTabHistory", e);
   }
-}
+};

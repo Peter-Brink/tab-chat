@@ -18,7 +18,9 @@ export default async function handler(req, res) {
   let sessionId = req.cookies.sessionId;
 
   if (!sessionId) {
-    return res.status(400).json({ error: "No session ID found in cookies" });
+    return res
+      .status(400)
+      .json({ error: "No session ID found in cookies", code: 0 });
   }
 
   try {

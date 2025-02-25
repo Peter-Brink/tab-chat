@@ -14,12 +14,12 @@ export default async function (req, res) {
     const sessionId = req.cookies.sessionId;
 
     if (!sessionId) {
-      return res.status(400).json({ error: "No session ID found in cookies" });
+      return res
+        .status(400)
+        .json({ error: "No session ID found in cookies", code: 0 });
     }
 
     const chatHistory = await getChatHistory(sessionId);
-
-    console.log("API, chat history:", chatHistory);
 
     return res.status(200).json(chatHistory);
   } catch (e) {
