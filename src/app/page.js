@@ -3,35 +3,27 @@
 import { useEffect, useState, useRef } from "react";
 import {
   fetchStream,
-  fetchTabStream,
   setRedisCookies,
   clearTabHistory,
   getChatHistory,
-} from "@/lib/api-connector";
+} from "@/lib/network/api-connector";
 import TabButton from "@/components/side-drawer";
-import MarkdownConverter from "@/lib/markdown-converter";
+import MarkdownConverter from "@/lib/utility/markdown-converter";
 
 const Search = () => {
-  const [testArray, setTestArray] = useState([]);
+  const [messageArray, setMessageArray] = useState([]);
   const [searchString, setSearchString] = useState("");
-  const [tabResults, setTabResults] = useState("");
   const [isFetching, setIsFetching] = useState(false);
+
   const [selectedText, setSelectedText] = useState("");
   const [replyText, setReplyText] = useState("");
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [tabText, setTabText] = useState("");
-  const popupRef = useRef(null);
+  const [tabResults, setTabResults] = useState("");
 
-  // Toggle drawer visibility
-  const toggleDrawer = async (e) => {
-    if (isDrawerOpen) {
-      setTabResults("");
-      setTabText("");
-      await clearTabHistory();
-    }
-    setIsDrawerOpen((prevState) => !prevState);
-  };
+  const popupRef = useRef(null);
 
   useEffect(() => {
     retrieveChatHistory();
@@ -42,10 +34,6 @@ const Search = () => {
         if (selection && selection.toString().trim().length > 0) {
           const range = selection.getRangeAt(0);
           const rect = range.getBoundingClientRect();
-          if (selection.toString().includes("---")) {
-            setSelectedText("");
-            return;
-          }
           setSelectedText(selection.toString());
 
           setPopupPosition({
@@ -64,33 +52,30 @@ const Search = () => {
     };
   }, []);
 
-  const handleReply = (e) => {
-    console.log(selectedText);
+  const toggleTabDrawer = async (e) => {
+    if (isDrawerOpen) {
+      setTabResults("");
+      setTabText("");
+      await clearTabHistory();
+    }
+    setIsDrawerOpen((prevState) => !prevState);
+  };
+
+  const handlePopupReplyButtonClick = (e) => {
     setReplyText(selectedText);
   };
 
-  const handleTab = async (e) => {
+  const handlePopupTabButtonClick = async (e) => {
     setTabResults("");
     await clearTabHistory();
     if (!isDrawerOpen) {
-      toggleDrawer();
+      toggleTabDrawer();
     }
     setTabText(selectedText);
   };
 
-  const searchTab = async (tabSearchString) => {
-    if (isFetching) return;
-    setIsFetching(true);
-    await setRedisCookies(tabSearchString, tabText, true);
-    fetchTabStream((chunk) => {
-      setTabResults((prev) => prev + chunk);
-    }).then(() => {
-      setIsFetching(false);
-    });
-  };
-
-  function handleChunk(chunk) {
-    setTestArray((prev) => {
+  function handleNewChunk(chunk) {
+    setMessageArray((prev) => {
       const newState =
         prev[prev.length - 1].role === "user"
           ? [...prev, { role: "model", text: chunk }]
@@ -106,35 +91,35 @@ const Search = () => {
     });
   }
 
-  async function retrieveChatHistory() {
-    const history = await getChatHistory();
-    if (!history) return;
-    const formattedHistory = history.map((item) => {
-      return { role: item.role, text: item.parts[0].text };
-    });
-    setTestArray(() => formattedHistory);
-  }
-
-  const search = async () => {
+  const handleSearch = async () => {
     if (isFetching) return;
-    setTestArray((prev) => {
+    setMessageArray((prev) => {
       return [...prev, { role: "user", text: searchString }];
     });
     setIsFetching(true);
     setSearchString("");
     await setRedisCookies(searchString, replyText);
     fetchStream((chunk) => {
-      handleChunk(chunk);
+      handleNewChunk(chunk);
     }).then(() => {
       setIsFetching(false);
       setReplyText("");
     });
   };
 
+  async function retrieveChatHistory() {
+    const history = await getChatHistory();
+    if (!history) return;
+    const formattedHistory = history.map((item) => {
+      return { role: item.role, text: item.parts[0].text };
+    });
+    setMessageArray(() => formattedHistory);
+  }
+
   return (
     <div className="flex flex-col w-screen min-h-screen items-center">
       <div className="flex mt-10 mb-24 flex-col prose prose-code:text-gray-300 w-full max-w-[1000px] overflow-y-auto">
-        {testArray.map((test, index) => {
+        {messageArray.map((test, index) => {
           return (
             <div
               key={index}
@@ -149,8 +134,8 @@ const Search = () => {
           );
         })}
       </div>
-      <div className="flex fixed bottom-0 mb-10 justify-center">
-        <div className=" h-10 flex justify-center">
+      <div className="flex fixed bottom-0 bg-gray-500 justify-center">
+        <div className=" h-10 flex justify-center mb-10 ml-10 mr-10 mt-4">
           <input
             className="text-black w-[300px] rounded-2xl mr-4 p-4"
             type="text"
@@ -159,7 +144,7 @@ const Search = () => {
           />
           <button
             className="bg-blue-600 disabled:bg-gray-500 w-20 rounded-2xl"
-            onClick={search}
+            onClick={handleSearch}
             disabled={isFetching}
           >
             Search
@@ -175,13 +160,13 @@ const Search = () => {
         >
           <div
             className="w-[70px] h-[30px] flex items-center justify-center hover:bg-gray-600 hover:text-white rounded"
-            onClick={handleReply}
+            onClick={handlePopupReplyButtonClick}
           >
             Reply
           </div>
           <div
             className="w-[70px] h-[30px] flex items-center justify-center hover:bg-gray-600 hover:text-white rounded"
-            onClick={handleTab}
+            onClick={handlePopupTabButtonClick}
           >
             Tab
           </div>
@@ -189,12 +174,18 @@ const Search = () => {
       )}
 
       <TabButton
-        toggleDrawer={toggleDrawer}
         isDrawerOpen={isDrawerOpen}
         tabText={tabText}
-        searchTab={searchTab}
         tabResults={tabResults}
+        setTabResults={setTabResults}
       />
+
+      <button
+        onClick={toggleTabDrawer}
+        className={`fixed top-5 right-5 bg-blue-600 text-white p-3 rounded-lg shadow-lg focus:outline-none transition-all duration-300 ease-in-out z-`}
+      >
+        Tab
+      </button>
     </div>
   );
 };
