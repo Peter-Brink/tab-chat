@@ -3,7 +3,7 @@
 export const fetchStream = async (onNewData) => {
   return new Promise((resolve, reject) => {
     const eventSource = new EventSource(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/llm-connector`
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/chat-completion`
     );
 
     eventSource.onopen = () => {
