@@ -2,7 +2,7 @@ const {
   connectIoRedis,
   clearTabHistory,
   getChatHistory,
-} = require("../../src/lib/ioredis");
+} = require("../../src/lib/storage/ioredis");
 
 export default async function (req, res) {
   if (req.method !== "GET") {

@@ -3,7 +3,7 @@ const {
   connectIoRedis,
   getChatHistory,
   storeChatMessage,
-} = require("../../src/lib/ioredis");
+} = require("../../src/lib/storage/ioredis");
 
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "text/event-stream");

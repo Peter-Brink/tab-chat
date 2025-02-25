@@ -1,7 +1,8 @@
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import React from "react";
 
-export default function MarkdownConverter({ input }) {
+const MarkdownConverter = React.memo(({ input }) => {
   if (!input) {
     return "";
   }
@@ -17,4 +18,6 @@ export default function MarkdownConverter({ input }) {
       }}
     />
   );
-}
+});
+
+export default MarkdownConverter;

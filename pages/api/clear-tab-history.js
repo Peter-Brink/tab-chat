@@ -1,4 +1,4 @@
-const { connectIoRedis, clearTabHistory } = require("../../src/lib/ioredis");
+const { connectIoRedis, clearTabHistory } = require("../../src/lib/storage/ioredis");
 
 export default async function (req, res) {
   if (req.method !== "POST") {

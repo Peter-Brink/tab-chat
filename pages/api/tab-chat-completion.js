@@ -4,7 +4,7 @@ const {
   getChatHistory,
   getTabHistory,
   storeTabMessage,
-} = require("../../src/lib/ioredis");
+} = require("../../src/lib/storage/ioredis");
 
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "text/event-stream");
@@ -52,7 +52,6 @@ export default async function handler(req, res) {
     const nextMessage = replyTo
       ? `#${replyTo}.#\n${searchString}`
       : searchString;
-
 
     const result = await chat.sendMessageStream(nextMessage);
 
