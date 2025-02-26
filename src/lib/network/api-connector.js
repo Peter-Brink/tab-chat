@@ -155,11 +155,10 @@ export const getChatHistory = async () => {
     const data = await response.json();
 
     if (!response.ok) {
-      if (data.code === 0) {
-        console.log("No session ID found in cookies");
-        return;
-      }
       throw new Error(data.error);
+    } else if (data.code === 0) {
+      console.log("No session ID found in cookies");
+      return;
     }
 
     return data;

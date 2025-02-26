@@ -14,7 +14,7 @@ export default async function (req, res) {
 
     if (!sessionId) {
       return res
-        .status(400)
+        .status(200)
         .json({ error: "No session ID found in cookies", code: 0 });
     }
 
