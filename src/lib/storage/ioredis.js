@@ -26,7 +26,7 @@ async function connectIoRedis() {
 async function storeChatMessage(sessionId, role, message) {
   const key = `session:${sessionId}`;
 
-  await client.ltrim(key, -30, -1);
+  await client.ltrim(key, -50, -1);
 
   await client.rpush(
     key,
@@ -39,7 +39,7 @@ async function storeChatMessage(sessionId, role, message) {
 async function storeTabMessage(sessionId, role, message) {
   const key = `tab:${sessionId}`;
 
-  await client.ltrim(key, -30, -1);
+  await client.ltrim(key, -50, -1);
 
   await client.rpush(
     key,
