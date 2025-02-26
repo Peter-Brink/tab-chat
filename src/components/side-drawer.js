@@ -1,17 +1,28 @@
 "use client";
 
-import { useImperativeHandle, useState, forwardRef } from "react";
+import { useImperativeHandle, useState, forwardRef, useRef } from "react";
 import { setRedisCookies, fetchTabStream } from "@/lib/network/api-connector";
 import MarkdownConverter from "@/lib/utility/markdown-converter";
+import { useCustomScroll, useShouldScroll } from "@/hooks/scroll-hooks";
+import { ChevronDown } from "lucide-react";
 
 const SideDrawer = forwardRef(({ tabText }, ref) => {
   const [tabSearchString, setTabSearchString] = useState("");
   const [tabIsFetching, setTabIsFetching] = useState(false);
   const [tabMessageArray, setTabMessageArray] = useState([]);
+  const [showTabScrollButton, setShowTabScrollButton] = useState(false);
+
+  const scrollRef = useRef(null);
+
+  useCustomScroll(scrollRef, setShowTabScrollButton);
+  useShouldScroll(scrollRef, tabMessageArray);
 
   useImperativeHandle(ref, () => {
     return {
-      clearTabMessages: () => setTabMessageArray([]),
+      clearTabMessages: () => {
+        setTabMessageArray([]);
+        setShowTabScrollButton(false);
+      },
     };
   });
 
@@ -47,6 +58,16 @@ const SideDrawer = forwardRef(({ tabText }, ref) => {
     });
   }
 
+  const handleScrollRequest = () => {
+    setShowTabScrollButton(false);
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault(); // Prevents creating a new line in the textarea
@@ -55,8 +76,11 @@ const SideDrawer = forwardRef(({ tabText }, ref) => {
   };
 
   return (
-    <div className="flex flex-col flex-grow mt-12 p-7">
-      <div className="flex flex-col flex-grow prose prose-invert overflow-auto items-center">
+    <div className="flex flex-col flex-grow mt-20 p-7">
+      <div
+        ref={scrollRef}
+        className="flex flex-col flex-grow prose prose-invert overflow-auto scrollable items-center"
+      >
         {tabText && (
           <div>
             <p className="text-lg mb-12 font-bold transition-all duration-500 ease-in-out text-myTextGrey">
@@ -86,6 +110,14 @@ const SideDrawer = forwardRef(({ tabText }, ref) => {
             );
           })}
         </div>
+        {showTabScrollButton && (
+          <div
+            className="flex absolute bottom-20 items-center justify-center rounded-3xl h-7 w-7 bg-myBackgroundGrey hover:bg-myQuoteBackground"
+            onClick={handleScrollRequest}
+          >
+            <ChevronDown className="text-myTextGrey" />
+          </div>
+        )}
       </div>
       <div className="flex items-center w-full">
         <input
