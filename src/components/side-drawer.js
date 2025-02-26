@@ -1,20 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useImperativeHandle, useState, forwardRef } from "react";
 import { setRedisCookies, fetchTabStream } from "@/lib/network/api-connector";
 import MarkdownConverter from "@/lib/utility/markdown-converter";
 
-const SideDrawer = ({ tabText, tabResults, setTabResults }) => {
-  const [searchString, setSearchString] = useState("");
+const SideDrawer = forwardRef(({ tabText }, ref) => {
+  const [tabSearchString, setTabSearchString] = useState("");
   const [tabIsFetching, setTabIsFetching] = useState(false);
+  const [tabMessageArray, setTabMessageArray] = useState([]);
+
+  useImperativeHandle(ref, () => {
+    return {
+      clearTabMessages: () => setTabMessageArray([]),
+    };
+  });
+
+  function handleNewTabChunk(chunk) {
+    setTabMessageArray((prev) => {
+      const newState =
+        prev[prev.length - 1].role === "user"
+          ? [...prev, { role: "model", text: chunk }]
+          : [
+              ...prev.slice(0, -1),
+              {
+                role: "model",
+                text: prev[prev.length - 1].text + chunk,
+              },
+            ];
+
+      return newState;
+    });
+  }
 
   async function searchTab() {
-    if (tabIsFetching || !searchString) return;
+    if (tabIsFetching || !tabSearchString) return;
+    setTabMessageArray((prev) => {
+      return [...prev, { role: "user", text: tabSearchString }];
+    });
     setTabIsFetching(true);
-    setSearchString("");
-    await setRedisCookies(searchString, tabText, true);
+    setTabSearchString("");
+    await setRedisCookies(tabSearchString, tabText, true);
     fetchTabStream((chunk) => {
-      setTabResults((prev) => prev + chunk);
+      handleNewTabChunk(chunk);
     }).then(() => {
       setTabIsFetching(false);
     });
@@ -28,20 +55,37 @@ const SideDrawer = ({ tabText, tabResults, setTabResults }) => {
   };
 
   return (
-    <div className="flex flex-col flex-grow mt-20 p-7">
-      <div className="flex prose prose-invert flex-col flex-grow overflow-auto items-center">
+    <div className="flex flex-col flex-grow mt-12 p-7">
+      <div className="flex flex-col flex-grow prose prose-invert overflow-auto items-center">
         {tabText && (
           <div>
-            <p className="text-lg font-bold transition-all duration-500 ease-in-out text-myTextGrey">
+            <p className="text-lg mb-12 font-bold transition-all duration-500 ease-in-out text-myTextGrey">
               "{tabText}"
             </p>
           </div>
         )}
-        {tabResults && (
-          <div className="text-base mt-10 leading-7 transition-all duration-500 ease-in-out text-myTextGrey">
-            <MarkdownConverter input={tabResults} />
-          </div>
-        )}
+        <div className="text-base mt-0 prose-p:m-2 w-full transition-all duration-500 ease-in-out text-myTextGrey">
+          {tabMessageArray.map((message, index) => {
+            return (
+              <div
+                key={index}
+                className={`flex flex-grow mb-7 ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`text-base ${
+                    message.role === "model"
+                      ? "text-left text-[15px] leading-7 text-myTextGrey rounded-xl"
+                      : "bg-myTextGrey text-[15px] text-myMessageGrey rounded-3xl pl-4 pr-4"
+                  }`}
+                >
+                  <MarkdownConverter input={message.text} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
       <div className="flex items-center w-full">
         <input
@@ -49,8 +93,8 @@ const SideDrawer = ({ tabText, tabResults, setTabResults }) => {
           type="text"
           onKeyDown={handleKeyDown}
           placeholder="Get more context..."
-          onChange={(e) => setSearchString(e.target.value)}
-          value={searchString}
+          onChange={(e) => setTabSearchString(e.target.value)}
+          value={tabSearchString}
         />
         <button
           className={`bg-gradient-to-b cursor-pointer text-myTextGrey from-gradientBlue1 to-gradientBlue2 h-10 rounded-2xl pl-4 pr-4 disabled:opacity-50 ${
@@ -66,6 +110,6 @@ const SideDrawer = ({ tabText, tabResults, setTabResults }) => {
       </div>
     </div>
   );
-};
+});
 
 export default SideDrawer;

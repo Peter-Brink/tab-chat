@@ -24,7 +24,6 @@ const Search = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [tabText, setTabText] = useState("");
-  const [tabResults, setTabResults] = useState("");
 
   const [shouldAllowTab, setShouldAllowTab] = useState(true);
   const [screenSizeAllowed, setScreenSizeAllowed] = useState(true);
@@ -32,6 +31,7 @@ const Search = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   const popupRef = useRef(null);
+  const sideDrawerRef = useRef(null);
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const Search = () => {
     const handleSetShowScrollButton = () => {
       const shouldShowScrollButton =
         scrollRef.current.scrollTop <=
-        scrollRef.current.scrollHeight - scrollRef.current.clientHeight - 300;
+        scrollRef.current.scrollHeight - scrollRef.current.clientHeight - 250;
 
       setShowScrollButton(shouldShowScrollButton);
     };
@@ -93,7 +93,7 @@ const Search = () => {
   useEffect(() => {
     const shouldScroll =
       scrollRef.current.scrollTop >
-      scrollRef.current.scrollHeight - scrollRef.current.clientHeight - 300;
+      scrollRef.current.scrollHeight - scrollRef.current.clientHeight - 250;
 
     if (shouldScroll || scrollRef.current.scrollTop === 0) {
       scrollRef.current.scrollTo({
@@ -115,7 +115,7 @@ const Search = () => {
 
   const toggleTabDrawer = async (e) => {
     if (isDrawerOpen) {
-      setTabResults("");
+      sideDrawerRef.current.clearTabMessages();
       setTabText("");
       await clearTabHistory();
     }
@@ -127,7 +127,7 @@ const Search = () => {
   };
 
   const handlePopupTabButtonClick = async (e) => {
-    setTabResults("");
+    sideDrawerRef.current.clearTabMessages();
     await clearTabHistory();
     if (!isDrawerOpen) {
       toggleTabDrawer();
@@ -181,7 +181,7 @@ const Search = () => {
     setTabText("");
     setSelectedText("");
     setReplyText("");
-    setTabResults("");
+    sideDrawerRef.current.clearTabMessages();
     setMessageArray([]);
   };
 
@@ -212,9 +212,9 @@ const Search = () => {
                     }`}
                   >
                     <div
-                      className={`text-base leading-7 text-myTextGrey ${
+                      className={`text-base text-myTextGrey ${
                         message.role === "model"
-                          ? "text-left text-[17px] rounded-xl"
+                          ? "text-left text-[17px] leading-7 rounded-xl"
                           : "bg-myMessageGrey rounded-3xl pl-4 pr-4"
                       }`}
                     >
@@ -244,11 +244,7 @@ const Search = () => {
         }`}
         style={{ boxShadow: "-5px 0px 10px rgba(0, 0, 0, 0.2)" }}
       >
-        <SideDrawer
-          tabText={tabText}
-          tabResults={tabResults}
-          setTabResults={setTabResults}
-        />
+        <SideDrawer ref={sideDrawerRef} tabText={tabText} />
       </div>
 
       {selectedText && (
