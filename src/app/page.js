@@ -12,6 +12,7 @@ import {
 import SideDrawer from "@/components/side-drawer";
 import MarkdownConverter from "@/lib/utility/markdown-converter";
 import SearchBar from "@/components/search-bar";
+import { useCustomScroll, useShouldScroll } from "@/hooks/scroll-hooks";
 
 const Search = () => {
   const [messageArray, setMessageArray] = useState([]);
@@ -33,6 +34,9 @@ const Search = () => {
   const popupRef = useRef(null);
   const sideDrawerRef = useRef(null);
   const scrollRef = useRef(null);
+
+  useCustomScroll(scrollRef, setShowScrollButton);
+  useShouldScroll(scrollRef, messageArray);
 
   useEffect(() => {
     const handleResize = () => {
@@ -73,35 +77,6 @@ const Search = () => {
       document.removeEventListener("mouseup", handleTextSelection);
     };
   }, []);
-
-  useEffect(() => {
-    const handleSetShowScrollButton = () => {
-      const shouldShowScrollButton =
-        scrollRef.current.scrollTop <=
-        scrollRef.current.scrollHeight - scrollRef.current.clientHeight - 250;
-
-      setShowScrollButton(shouldShowScrollButton);
-    };
-
-    const scrollElement = scrollRef.current;
-    scrollElement.addEventListener("scroll", handleSetShowScrollButton);
-    return () => {
-      scrollElement.removeEventListener("scroll", handleSetShowScrollButton);
-    };
-  }, []);
-
-  useEffect(() => {
-    const shouldScroll =
-      scrollRef.current.scrollTop >
-      scrollRef.current.scrollHeight - scrollRef.current.clientHeight - 250;
-
-    if (shouldScroll || scrollRef.current.scrollTop === 0) {
-      scrollRef.current.scrollTo({
-        top: scrollRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [messageArray]);
 
   const handleScrollRequest = () => {
     setShowScrollButton(false);
