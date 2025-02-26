@@ -54,6 +54,11 @@ async function clearTabHistory(sessionId) {
   await client.del(key);
 }
 
+async function clearChatHistory(sessionId) {
+  const key = `session:${sessionId}`;
+  await client.del(key);
+}
+
 async function getTabHistory(sessionId) {
   const key = `tab:${sessionId}`;
   const messages = await client.lrange(key, 0, -1);
@@ -73,4 +78,5 @@ module.exports = {
   storeTabMessage,
   getTabHistory,
   clearTabHistory,
+  clearChatHistory,
 };

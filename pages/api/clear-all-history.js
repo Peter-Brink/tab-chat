@@ -1,4 +1,8 @@
-const { connectIoRedis, clearTabHistory } = require("../../src/lib/storage/ioredis");
+const {
+  connectIoRedis,
+  clearTabHistory,
+  clearChatHistory,
+} = require("../../src/lib/storage/ioredis");
 
 export default async function (req, res) {
   if (req.method !== "POST") {
@@ -14,6 +18,7 @@ export default async function (req, res) {
     }
 
     await clearTabHistory(sessionId);
+    await clearChatHistory(sessionId);
 
     return res.status(200).json({ message: "Tab history cleared" });
   } catch (e) {

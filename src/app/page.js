@@ -6,6 +6,7 @@ import {
   fetchStream,
   setRedisCookies,
   clearTabHistory,
+  clearAllHistory,
   getChatHistory,
 } from "@/lib/network/api-connector";
 import SideDrawer from "@/components/side-drawer";
@@ -117,11 +118,11 @@ const Search = () => {
     setIsFetching(true);
     setSearchString("");
     await setRedisCookies(searchString, replyText);
+    setReplyText("");
     fetchStream((chunk) => {
       handleNewChunk(chunk);
     }).then(() => {
       setIsFetching(false);
-      setReplyText("");
     });
   };
 
@@ -130,6 +131,15 @@ const Search = () => {
       event.preventDefault(); // Prevents creating a new line in the textarea
       handleSearch(); // Trigger the submit action
     }
+  };
+
+  const handleClearChat = async () => {
+    await clearAllHistory();
+    setTabText("");
+    setSelectedText("");
+    setReplyText("");
+    setTabResults("");
+    setMessageArray([]);
   };
 
   async function retrieveChatHistory() {
@@ -175,6 +185,8 @@ const Search = () => {
             handleSearch={handleSearch}
             handleKeyDown={handleKeyDown}
             isFetching={isFetching}
+            replyTo={replyText}
+            setReplyTo={setReplyText}
           />
         </div>
       </div>
@@ -230,6 +242,7 @@ const Search = () => {
 
       <button
         className={`fixed top-5 cursor-pointer left-10 bg-myTextGrey text-black hover:bg-myMessageGrey hover:text-myTextGrey pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none transition-all duration-300 ease-in-out`}
+        onClick={handleClearChat}
       >
         Clear chat
       </button>
