@@ -14,9 +14,7 @@ export default function ({
     <div className="absolute bottom-0 bg-transparent w-full">
       {replyTo && (
         <div className="flex pl-5 pr-5 pt-3 pb-3 items-center justify-between w-full text-base bg-myQuoteBackground text-myTextGrey mb-2 rounded-3xl">
-          <div className="line-clamp-2 max-h-12 w-full">
-            "{replyTo}"
-          </div>
+          <div className="line-clamp-2 max-h-12 w-full">"{replyTo}"</div>
 
           <div
             className="ml-2 w-[25px] h-[25px] cursor-pointer"
@@ -43,7 +41,11 @@ export default function ({
             value={searchString}
           />
           <button
-            className="bg-gradient-to-b text-myTextGrey cursor-pointer from-gradientBlue1 to-gradientBlue2 disabled:bg-gray-500 pl-4 pr-4 pt-2 pb-2 rounded-2xl"
+            className={`bg-gradient-to-b text-myTextGrey cursor-pointer from-gradientBlue1 to-gradientBlue2 disabled:opacity-50 pl-4 pr-4 pt-2 pb-2 rounded-2xl ${
+              isFetching
+                ? ""
+                : "transition-all duration-[500ms] hover:shadow-[0_0_12px_4px_rgba(0,87,209,0.9)]"
+            }`}
             onClick={handleSearch}
             disabled={isFetching}
           >

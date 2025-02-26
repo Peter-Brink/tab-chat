@@ -4,7 +4,7 @@ import { useState } from "react";
 import { setRedisCookies, fetchTabStream } from "@/lib/network/api-connector";
 import MarkdownConverter from "@/lib/utility/markdown-converter";
 
-const SideDrawer = ({ isDrawerOpen, tabText, tabResults, setTabResults }) => {
+const SideDrawer = ({ tabText, tabResults, setTabResults }) => {
   const [searchString, setSearchString] = useState("");
   const [tabIsFetching, setTabIsFetching] = useState(false);
 
@@ -53,7 +53,11 @@ const SideDrawer = ({ isDrawerOpen, tabText, tabResults, setTabResults }) => {
           value={searchString}
         />
         <button
-          className="bg-gradient-to-b cursor-pointer text-myTextGrey from-gradientBlue1 to-gradientBlue2 h-10 rounded-2xl pl-4 pr-4 disabled:bg-gray-500"
+          className={`bg-gradient-to-b cursor-pointer text-myTextGrey from-gradientBlue1 to-gradientBlue2 h-10 rounded-2xl pl-4 pr-4 disabled:opacity-50 ${
+            tabIsFetching
+              ? ""
+              : "transition-all duration-[500ms] hover:shadow-[0_0_12px_4px_rgba(0,87,209,0.9)]"
+          }`}
           onClick={searchTab}
           disabled={tabIsFetching}
         >
