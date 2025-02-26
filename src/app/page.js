@@ -197,7 +197,6 @@ const Search = () => {
         style={{ boxShadow: "-5px 0px 10px rgba(0, 0, 0, 0.2)" }}
       >
         <SideDrawer
-          isDrawerOpen={isDrawerOpen}
           tabText={tabText}
           tabResults={tabResults}
           setTabResults={setTabResults}

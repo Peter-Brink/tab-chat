@@ -24,10 +24,13 @@ export default async function handler(req, res) {
 
   try {
     const searchString = await client.get(sessionId);
-    const chatHistory = await getChatHistory(sessionId);
-    const tabHistory = await getTabHistory(sessionId);
-    const history = chatHistory.concat(tabHistory);
     const replyTo = await client.get(`replyTo:${sessionId}`);
+    let history;
+    if (replyTo) {
+      const chatHistory = await getChatHistory(sessionId);
+      const tabHistory = await getTabHistory(sessionId);
+      history = chatHistory.concat(tabHistory);
+    }
 
     if (!searchString) {
       return res
@@ -45,9 +48,11 @@ export default async function handler(req, res) {
         "You are a friendly AI assistant that provides succinct additional information about text. You should answer in a relaxed, conversational tone, but remain informative and helpful.  You should also be consice and keep things brief. If the question starts with a quote delimited by the # key, then your response should be based off of the text in that quote.",
     });
 
-    const chat = model.startChat({
-      history: history,
-    });
+    const chat = model.startChat(
+      history && {
+        history: history,
+      }
+    );
 
     const nextMessage = replyTo
       ? `#${replyTo}.#\n${searchString}`
