@@ -29,7 +29,10 @@ const Search = () => {
   const [shouldAllowTab, setShouldAllowTab] = useState(true);
   const [screenSizeAllowed, setScreenSizeAllowed] = useState(true);
 
+  const [showScrollButton, setShowScrollButton] = useState(false);
+
   const popupRef = useRef(null);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -70,6 +73,45 @@ const Search = () => {
       document.removeEventListener("mouseup", handleTextSelection);
     };
   }, []);
+
+  useEffect(() => {
+    const handleSetShowScrollButton = () => {
+      const shouldShowScrollButton =
+        scrollRef.current.scrollTop <=
+        scrollRef.current.scrollHeight - scrollRef.current.clientHeight - 300;
+
+      setShowScrollButton(shouldShowScrollButton);
+    };
+
+    const scrollElement = scrollRef.current;
+    scrollElement.addEventListener("scroll", handleSetShowScrollButton);
+    return () => {
+      scrollElement.removeEventListener("scroll", handleSetShowScrollButton);
+    };
+  }, []);
+
+  useEffect(() => {
+    const shouldScroll =
+      scrollRef.current.scrollTop >
+      scrollRef.current.scrollHeight - scrollRef.current.clientHeight - 300;
+
+    if (shouldScroll || scrollRef.current.scrollTop === 0) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messageArray]);
+
+  const handleScrollRequest = () => {
+    setShowScrollButton(false);
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const toggleTabDrawer = async (e) => {
     if (isDrawerOpen) {
@@ -135,6 +177,7 @@ const Search = () => {
 
   const handleClearChat = async () => {
     await clearAllHistory();
+    setShowScrollButton(false);
     setTabText("");
     setSelectedText("");
     setReplyText("");
@@ -155,7 +198,10 @@ const Search = () => {
     <div className="flex w-screen h-screen items-center overflow-hidden bg-myBackgroundGrey">
       <div className="flex flex-col h-screen flex-grow items-center pr-12 pl-12">
         <div className="relative max-w-[1000px] w-full flex h-full">
-          <div className="mt-20 mb-24 prose prose-invert prose-p:m-3 prose-code:text-gray-300 w-full max-w-[1000px] overflow-auto scrollable">
+          <div
+            ref={scrollRef}
+            className="mt-20 mb-36 prose prose-invert prose-p:m-3 prose-code:text-gray-300 w-full max-w-[1000px] overflow-auto scrollable"
+          >
             <div className="mb-24">
               {messageArray.map((message, index) => {
                 return (
@@ -187,6 +233,8 @@ const Search = () => {
             isFetching={isFetching}
             replyTo={replyText}
             setReplyTo={setReplyText}
+            showScrollButton={showScrollButton}
+            handleScroll={handleScrollRequest}
           />
         </div>
       </div>

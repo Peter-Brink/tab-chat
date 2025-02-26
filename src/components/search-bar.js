@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 
 export default function ({
   setSearchString,
@@ -8,14 +8,22 @@ export default function ({
   isFetching,
   replyTo,
   setReplyTo,
+  showScrollButton,
+  handleScroll,
   tab = false,
 }) {
   return (
     <div className="absolute bottom-0 bg-transparent w-full">
+      {showScrollButton && (
+        <div className="flex items-center justify-center h-8 w-full mb-2">
+          <div className="flex items-center justify-center rounded-3xl h-8 w-8 bg-myMessageGrey hover:bg-myQuoteBackground" onClick={handleScroll}>
+            <ChevronDown className="text-myTextGrey" />
+          </div>
+        </div>
+      )}
       {replyTo && (
         <div className="flex pl-5 pr-5 pt-3 pb-3 items-center justify-between w-full text-base bg-myQuoteBackground text-myTextGrey mb-2 rounded-3xl">
           <div className="line-clamp-2 max-h-12 w-full">"{replyTo}"</div>
-
           <div
             className="ml-2 w-[25px] h-[25px] cursor-pointer"
             onClick={() => setReplyTo("")}
