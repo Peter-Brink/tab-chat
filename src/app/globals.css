@@ -20,23 +20,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.prose code {
-  @apply text-sm text-myTextGrey pl-2 pr-2 pt-1 pb-1 ml-1 mr-1 bg-myCodeBackground px-1 py-0.5 rounded-md;
-}
-
-.prose code::before,
-.prose code::after {
-  content: none;
-}
-
-.prose ul {
-  list-style-type: disc;
-}
-
-.prose ul li::marker {
-  color: #E5E5E5; /* Your custom color */
-}
-
 .scrollable {
   -ms-overflow-style: none;  /* For Internet Explorer */
   scrollbar-width: none;  /* For Firefox */

@@ -1,0 +1,30 @@
+
+.prose pre{
+    background: #1a1a1a;
+    color: #cbd5e1;
+    border-radius: 8px;
+    padding-left: 1.5rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.5; /* Ensure lines are spaced correctly */
+    font-family: "Fira Code", monospace;
+  }
+  
+  .prose code {
+    @apply text-sm text-myTextGrey pl-2 pr-2 pt-1 pb-1 ml-1 mr-1 bg-myCodeBackground px-1 py-0.5 rounded-md;
+  }
+  
+  .prose code::before,
+  .prose code::after {
+    content: none;
+  }
+  
+  .prose ul {
+    list-style-type: disc;
+  }
+  
+  .prose ul li::marker {
+    color: #E5E5E5; /* Your custom color */
+  }

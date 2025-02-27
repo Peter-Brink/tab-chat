@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/prism.css";
+import "@/styles/prose.css";
 import "./globals.css";
 import { Inter } from "next/font/google";
 
