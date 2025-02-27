@@ -175,30 +175,40 @@ const Search = () => {
         <div className="relative max-w-[1000px] w-full flex h-full">
           <div
             ref={scrollRef}
-            className="mt-20 mb-36 prose prose-invert prose-p:m-3 prose-code:text-gray-300 w-full max-w-[1000px] overflow-auto scrollable"
+            className={`flex flex-col mt-20 mb-36 prose prose-invert prose-p:m-3 prose-code:text-gray-300 w-full max-w-[1000px] overflow-auto scrollable ${
+              messageArray.length === 0 ? "items-center justify-center" : ""
+            }`}
           >
-            <div className="mb-24">
-              {messageArray.map((message, index) => {
-                return (
-                  <div
-                    key={index}
-                    className={`flex mb-7 items-center ${
-                      message.role === "user" ? "justify-end" : "justify-start"
-                    }`}
-                  >
+            {messageArray.length !== 0 ? (
+              <div className="mb-24">
+                {messageArray.map((message, index) => {
+                  return (
                     <div
-                      className={`text-base text-myTextGrey ${
-                        message.role === "model"
-                          ? "text-left text-[17px] leading-7 rounded-xl"
-                          : "bg-myMessageGrey rounded-3xl pl-4 pr-4"
+                      key={index}
+                      className={`flex mb-7 items-center ${
+                        message.role === "user"
+                          ? "justify-end"
+                          : "justify-start"
                       }`}
                     >
-                      <MarkdownConverter input={message.text} />
+                      <div
+                        className={`text-base text-myTextGrey ${
+                          message.role === "model"
+                            ? "text-left text-[17px] leading-7 rounded-xl"
+                            : "bg-myMessageGrey rounded-3xl pl-4 pr-4"
+                        }`}
+                      >
+                        <MarkdownConverter input={message.text} />
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center text-5xl mb-32 p-8 text-myTextGrey opacity-50">
+                Let's get building
+              </div>
+            )}
           </div>
           <SearchBar
             setSearchString={setSearchString}
