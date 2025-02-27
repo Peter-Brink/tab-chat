@@ -41,7 +41,12 @@ const Search = () => {
   const previousScrollPosition = useRef(0);
   const allowAutoScroll = useRef(true);
 
-  useCustomScroll(scrollRef, setShowScrollButton, allowAutoScroll, previousScrollPosition);
+  useCustomScroll(
+    scrollRef,
+    setShowScrollButton,
+    allowAutoScroll,
+    previousScrollPosition
+  );
   useShouldScroll(scrollRef, messageArray, allowAutoScroll);
 
   useEffect(() => {
