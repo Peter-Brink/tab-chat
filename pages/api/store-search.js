@@ -14,10 +14,9 @@ export default async function handler(req, res) {
     if (!sessionId) {
       sessionId = uuidv4();
 
-      //TODO: Add Secure to allow only HTTPS
       res.setHeader(
         "Set-Cookie",
-        `sessionId=${sessionId}; HttpOnly; Max-Age=86400; SameSite=Strict; Path=/`
+        `sessionId=${sessionId}; HttpOnly; Max-Age=86400; SameSite=Strict; Path=/; Secure;`
       );
     }
 
