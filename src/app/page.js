@@ -116,6 +116,7 @@ const Search = () => {
 
   const handlePopupReplyButtonClick = (e) => {
     setReplyText(selectedText);
+    mainInputRef.current.focus();
   };
 
   const handlePopupTabButtonClick = async (e) => {
@@ -292,7 +293,11 @@ const Search = () => {
       )}
 
       <button
-        className={`fixed top-5 cursor-pointer left-10 bg-myTextGrey text-black pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none transition-all duration-300 ease-in-out ${ isFetching ? "opacity-50" : "hover:bg-myMessageGrey hover:text-myTextGrey" }`}
+        className={`fixed top-5 cursor-pointer left-10 bg-myTextGrey text-black pl-4 pr-4 pt-2 pb-2 rounded-2xl focus:outline-none transition-all duration-300 ease-in-out ${
+          isFetching
+            ? "opacity-50"
+            : "hover:bg-myMessageGrey hover:text-myTextGrey"
+        }`}
         onClick={handleClearChat}
         disabled={isFetching}
       >
