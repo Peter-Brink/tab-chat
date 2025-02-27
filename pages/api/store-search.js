@@ -33,13 +33,13 @@ export default async function handler(req, res) {
     try {
       const client = await connectIoRedis();
 
-      await client.set(sessionId, searchString);
+      await client.set(`searchString:${sessionId}`, searchString);
+      await client.expire(`searchString:${sessionId}`, 3600);
       if (!tab) {
         await storeChatMessage(sessionId, "user", searchString);
       } else {
         await storeTabMessage(sessionId, "user", searchString);
       }
-      await client.expire(sessionId, 3600);
       if (replyTo) {
         await client.set(`replyTo:${sessionId}`, replyTo);
         await client.expire(`replyTo:${sessionId}`, 3600);

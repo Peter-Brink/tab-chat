@@ -24,7 +24,7 @@ async function connectIoRedis() {
 }
 
 async function storeChatMessage(sessionId, role, message) {
-  const key = `session:${sessionId}`;
+  const key = `sessionMessages:${sessionId}`;
 
   await client.ltrim(key, -50, -1);
 
@@ -37,7 +37,7 @@ async function storeChatMessage(sessionId, role, message) {
 }
 
 async function storeTabMessage(sessionId, role, message) {
-  const key = `tab:${sessionId}`;
+  const key = `tabMessages:${sessionId}`;
 
   await client.ltrim(key, -50, -1);
 
@@ -50,23 +50,23 @@ async function storeTabMessage(sessionId, role, message) {
 }
 
 async function clearTabHistory(sessionId) {
-  const key = `tab:${sessionId}`;
+  const key = `tabMessages:${sessionId}`;
   await client.del(key);
 }
 
 async function clearChatHistory(sessionId) {
-  const key = `session:${sessionId}`;
+  const key = `sessionMessages:${sessionId}`;
   await client.del(key);
 }
 
 async function getTabHistory(sessionId) {
-  const key = `tab:${sessionId}`;
+  const key = `tabMessages:${sessionId}`;
   const messages = await client.lrange(key, 0, -1);
   return messages.map((msg) => JSON.parse(msg));
 }
 
 async function getChatHistory(sessionId) {
-  const key = `session:${sessionId}`;
+  const key = `sessionMessages:${sessionId}`;
   const messages = await client.lrange(key, 0, -1);
   return messages.map((msg) => JSON.parse(msg));
 }

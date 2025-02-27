@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const searchString = await client.get(sessionId);
+    const searchString = await client.get(`searchString:${sessionId}`);
     const chatHistory = await getChatHistory(sessionId);
     const replyTo = await client.get(`replyTo:${sessionId}`);
 
@@ -63,6 +63,7 @@ export default async function handler(req, res) {
 
     storeChatMessage(sessionId, "model", llmResponse);
     await client.set(`replyTo:${sessionId}`, "");
+    await client.expire(`replyTo:${sessionId}`, 3600);
     const newReplyTo = await client.get(`replyTo:${sessionId}`);
 
     res.write(`data: ${JSON.stringify("[DONE]")}\n\n`);

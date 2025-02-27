@@ -23,7 +23,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const searchString = await client.get(sessionId);
+    const searchString = await client.get(`searchString:${sessionId}`);
     const replyTo = await client.get(`replyTo:${sessionId}`);
     let history;
     if (replyTo) {
@@ -71,6 +71,7 @@ export default async function handler(req, res) {
 
     storeTabMessage(sessionId, "model", llmResponse);
     await client.set(`replyTo:${sessionId}`, "");
+    await client.expire(`replyTo:${sessionId}`, 3600);
 
     res.write(`data: ${JSON.stringify("[DONE]")}\n\n`);
     res.flush();
