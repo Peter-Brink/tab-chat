@@ -6,7 +6,7 @@ import MarkdownConverter from "@/lib/utility/markdown-converter";
 import { useCustomScroll, useShouldScroll } from "@/hooks/scroll-hooks";
 import { ChevronDown } from "lucide-react";
 
-const SideDrawer = forwardRef(({ tabText }, ref) => {
+const SideDrawer = forwardRef(({ tabText, inputRef }, ref) => {
   const [tabSearchString, setTabSearchString] = useState("");
   const [tabIsFetching, setTabIsFetching] = useState(false);
   const [tabMessageArray, setTabMessageArray] = useState([]);
@@ -22,6 +22,7 @@ const SideDrawer = forwardRef(({ tabText }, ref) => {
       clearTabMessages: () => {
         setTabMessageArray([]);
         setShowTabScrollButton(false);
+        setTabSearchString("");
       },
     };
   });
@@ -77,17 +78,17 @@ const SideDrawer = forwardRef(({ tabText }, ref) => {
 
   return (
     <div className="flex flex-col flex-grow mt-20 p-7">
+      {tabText && (
+        <div>
+          <p className="text-lg mb-12 font-bold transition-all text-center duration-500 ease-in-out text-myTextGrey">
+            "{tabText}"
+          </p>
+        </div>
+      )}
       <div
         ref={scrollRef}
         className="flex flex-col flex-grow prose prose-invert overflow-auto scrollable items-center"
       >
-        {tabText && (
-          <div>
-            <p className="text-lg mb-12 font-bold transition-all duration-500 ease-in-out text-myTextGrey">
-              "{tabText}"
-            </p>
-          </div>
-        )}
         <div className="text-base mt-0 prose-p:m-2 w-full transition-all duration-500 ease-in-out text-myTextGrey">
           {tabMessageArray.map((message, index) => {
             return (
@@ -121,6 +122,7 @@ const SideDrawer = forwardRef(({ tabText }, ref) => {
       </div>
       <div className="flex items-center w-full">
         <input
+          ref={inputRef}
           className="text-black h-10 rounded-2xl flex-grow mr-4 p-4 focus:outline-none bg-myTextGrey"
           type="text"
           onKeyDown={handleKeyDown}

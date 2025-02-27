@@ -10,13 +10,17 @@ export default function ({
   setReplyTo,
   showScrollButton,
   handleScroll,
+  inputRef,
   tab = false,
 }) {
   return (
     <div className="absolute bottom-0 bg-transparent w-full">
       {showScrollButton && (
         <div className="flex items-center justify-center h-8 w-full mb-2">
-          <div className="flex items-center justify-center rounded-3xl h-8 w-8 bg-myMessageGrey hover:bg-myQuoteBackground" onClick={handleScroll}>
+          <div
+            className="flex items-center justify-center rounded-3xl h-8 w-8 bg-myMessageGrey hover:bg-myQuoteBackground"
+            onClick={handleScroll}
+          >
             <ChevronDown className="text-myTextGrey" />
           </div>
         </div>
@@ -39,6 +43,8 @@ export default function ({
           }`}
         >
           <textarea
+          ref={inputRef}
+            autoFocus
             placeholder="Ask away..."
             autoCapitalize="sentences"
             onKeyDown={handleKeyDown}

@@ -13,6 +13,7 @@ import SideDrawer from "@/components/side-drawer";
 import MarkdownConverter from "@/lib/utility/markdown-converter";
 import SearchBar from "@/components/search-bar";
 import { useCustomScroll, useShouldScroll } from "@/hooks/scroll-hooks";
+import { Hammer } from "lucide-react";
 
 const Search = () => {
   const [messageArray, setMessageArray] = useState([]);
@@ -34,6 +35,8 @@ const Search = () => {
   const popupRef = useRef(null);
   const sideDrawerRef = useRef(null);
   const scrollRef = useRef(null);
+  const tabInputRef = useRef(null);
+  const mainInputRef = useRef(null);
 
   useCustomScroll(scrollRef, setShowScrollButton);
   useShouldScroll(scrollRef, messageArray);
@@ -93,6 +96,11 @@ const Search = () => {
       sideDrawerRef.current.clearTabMessages();
       setTabText("");
       await clearTabHistory();
+      mainInputRef.current.focus();
+    } else {
+      setTimeout(() => {
+        tabInputRef.current.focus();
+      }, 500);
     }
     setIsDrawerOpen((prevState) => !prevState);
   };
@@ -205,8 +213,9 @@ const Search = () => {
                 })}
               </div>
             ) : (
-              <div className="flex flex-col items-center text-5xl mb-32 p-8 text-myTextGrey opacity-50">
+              <div className="flex items-center text-5xl mb-32 p-8 text-myTextGrey opacity-50">
                 Let's get building
+                <Hammer className="w-10 h-10 ml-4" />
               </div>
             )}
           </div>
@@ -220,6 +229,7 @@ const Search = () => {
             setReplyTo={setReplyText}
             showScrollButton={showScrollButton}
             handleScroll={handleScrollRequest}
+            inputRef={mainInputRef}
           />
         </div>
       </div>
@@ -229,7 +239,11 @@ const Search = () => {
         }`}
         style={{ boxShadow: "-5px 0px 10px rgba(0, 0, 0, 0.2)" }}
       >
-        <SideDrawer ref={sideDrawerRef} tabText={tabText} />
+        <SideDrawer
+          ref={sideDrawerRef}
+          tabText={tabText}
+          inputRef={tabInputRef}
+        />
       </div>
 
       {selectedText && (
