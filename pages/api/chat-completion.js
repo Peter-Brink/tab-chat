@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",
       systemInstruction:
-        "You are a friendly AI pair programmer who's job is to assist the programmer with their code. You should answer in a relaxed, conversational tone, but remain informative and helpful. If the question starts with a quote delimited by the # key, then your response should be based off of the text in that quote.",
+        "You are a friendly AI assistant pair programmer who's job is to assist the programmer with their code. You should answer in a relaxed, conversational tone, but remain informative and helpful. If the question starts with a quote delimited by the # key, then your response should be based off of the text in that quote.",
     });
 
     const chat = model.startChat({
