@@ -29,6 +29,14 @@ body {
   content: none;
 }
 
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose ul li::marker {
+  color: #E5E5E5; /* Your custom color */
+}
+
 .scrollable {
   -ms-overflow-style: none;  /* For Internet Explorer */
   scrollbar-width: none;  /* For Firefox */
