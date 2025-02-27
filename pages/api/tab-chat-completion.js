@@ -38,9 +38,7 @@ export default async function handler(req, res) {
         .json({ error: "Search string not found for the given session" });
     }
 
-    const genAI = new GoogleGenerativeAI(
-      "AIzaSyB_OxBGcKK3XxsfzIV5p2p_xIZl_Zu-mJA"
-    );
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",

@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     }
 
     const genAI = new GoogleGenerativeAI(
-      "AIzaSyB_OxBGcKK3XxsfzIV5p2p_xIZl_Zu-mJA"
+      process.env.GEMINI_API_KEY
     );
 
     const model = genAI.getGenerativeModel({
