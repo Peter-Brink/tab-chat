@@ -26,6 +26,9 @@ export default async function handler(req, res) {
   try {
     const searchString = await client.get(`searchString:${sessionId}`);
     const chatHistory = await getChatHistory(sessionId);
+    if(chatHistory[0].role === "model") {
+      chatHistory.shift();
+    }
     const replyTo = await client.get(`replyTo:${sessionId}`);
 
     if (!searchString) {

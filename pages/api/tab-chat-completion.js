@@ -30,6 +30,9 @@ export default async function handler(req, res) {
       const chatHistory = await getChatHistory(sessionId);
       const tabHistory = await getTabHistory(sessionId);
       history = chatHistory.concat(tabHistory);
+      if(history[0].role === "model") {
+        history.shift();
+      }
     }
 
     if (!searchString) {
