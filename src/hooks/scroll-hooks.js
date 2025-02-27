@@ -1,12 +1,37 @@
 import { useEffect } from "react";
 
-export const useCustomScroll = (scrollRef, setShowScrollButton) => {
+export const useCustomScroll = (
+  scrollRef,
+  setShowScrollButton,
+  allowAutoScroll,
+  previousScrollPosition,
+  tab = false
+) => {
   useEffect(() => {
     const handleSetShowScrollButton = () => {
+      const scrollIsAtBottom =
+        scrollRef.current.scrollTop >=
+        scrollRef.current.scrollHeight - scrollRef.current.clientHeight;
+
+      if (scrollIsAtBottom) {
+        allowAutoScroll.current = true;
+      }
+
+      const currentScrollPosition = scrollRef.current.scrollTop;
+
+      if (currentScrollPosition < previousScrollPosition.current) {
+        allowAutoScroll.current = false;
+      }
+
+      const offset = tab ? 400 : 140;
+
       const shouldShowScrollButton =
         scrollRef.current.scrollTop <=
-        scrollRef.current.scrollHeight - scrollRef.current.clientHeight - 250;
+        scrollRef.current.scrollHeight -
+          scrollRef.current.clientHeight -
+          offset;
 
+      previousScrollPosition.current = currentScrollPosition;
       setShowScrollButton(shouldShowScrollButton);
     };
 
@@ -18,13 +43,22 @@ export const useCustomScroll = (scrollRef, setShowScrollButton) => {
   }, []);
 };
 
-export const useShouldScroll = (scrollRef, messageArray) => {
+export const useShouldScroll = (
+  scrollRef,
+  messageArray,
+  allowAutoScroll,
+  tab = false
+) => {
   useEffect(() => {
-    const shouldScroll =
-      scrollRef.current.scrollTop >
-      scrollRef.current.scrollHeight - scrollRef.current.clientHeight - 250;
+    const offset = tab ? 700 : 250;
 
-    if (shouldScroll || scrollRef.current.scrollTop === 0) {
+    const shouldAutoScroll =
+      scrollRef.current.scrollTop >
+        scrollRef.current.scrollHeight -
+          scrollRef.current.clientHeight -
+          offset && allowAutoScroll.current;
+
+    if (shouldAutoScroll || scrollRef.current.scrollTop === 0) {
       scrollRef.current.scrollTo({
         top: scrollRef.current.scrollHeight,
         behavior: "smooth",

@@ -38,8 +38,11 @@ const Search = () => {
   const tabInputRef = useRef(null);
   const mainInputRef = useRef(null);
 
-  useCustomScroll(scrollRef, setShowScrollButton);
-  useShouldScroll(scrollRef, messageArray);
+  const previousScrollPosition = useRef(0);
+  const allowAutoScroll = useRef(true);
+
+  useCustomScroll(scrollRef, setShowScrollButton, allowAutoScroll, previousScrollPosition);
+  useShouldScroll(scrollRef, messageArray, allowAutoScroll);
 
   useEffect(() => {
     const handleResize = () => {
@@ -83,6 +86,7 @@ const Search = () => {
 
   const handleScrollRequest = () => {
     setShowScrollButton(false);
+    allowAutoScroll.current = true;
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
         top: scrollRef.current.scrollHeight,

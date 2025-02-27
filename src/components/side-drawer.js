@@ -13,9 +13,17 @@ const SideDrawer = forwardRef(({ tabText, inputRef }, ref) => {
   const [showTabScrollButton, setShowTabScrollButton] = useState(false);
 
   const scrollRef = useRef(null);
+  const previousTabScrollPosition = useRef(0);
+  const allowTabAutoScroll = useRef(true);
 
-  useCustomScroll(scrollRef, setShowTabScrollButton);
-  useShouldScroll(scrollRef, tabMessageArray);
+  useCustomScroll(
+    scrollRef,
+    setShowTabScrollButton,
+    allowTabAutoScroll,
+    previousTabScrollPosition,
+    true
+  );
+  useShouldScroll(scrollRef, tabMessageArray, allowTabAutoScroll, true);
 
   useImperativeHandle(ref, () => {
     return {
@@ -61,6 +69,7 @@ const SideDrawer = forwardRef(({ tabText, inputRef }, ref) => {
 
   const handleScrollRequest = () => {
     setShowTabScrollButton(false);
+    allowTabAutoScroll.current = true;
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
         top: scrollRef.current.scrollHeight,
@@ -94,7 +103,7 @@ const SideDrawer = forwardRef(({ tabText, inputRef }, ref) => {
             return (
               <div
                 key={index}
-                className={`flex flex-grow mb-7 ${
+                className={`flex flex-grow mb-4 ${
                   message.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
