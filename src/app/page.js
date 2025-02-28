@@ -104,7 +104,7 @@ const Search = () => {
     if (isDrawerOpen) {
       sideDrawerRef.current.clearTabMessages();
       setTabText("");
-      await clearTabHistory();
+      clearTabHistory();
       mainInputRef.current.focus();
     } else {
       setTimeout(() => {
@@ -125,6 +125,7 @@ const Search = () => {
     if (!isDrawerOpen) {
       toggleTabDrawer();
     }
+    tabInputRef.current.focus();
     setTabText(selectedText);
   };
 
