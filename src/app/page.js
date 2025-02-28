@@ -124,8 +124,9 @@ const Search = () => {
     await clearTabHistory();
     if (!isDrawerOpen) {
       toggleTabDrawer();
+    } else {
+      tabInputRef.current.focus();
     }
-    tabInputRef.current.focus();
     setTabText(selectedText);
   };
 
