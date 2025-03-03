@@ -7,8 +7,8 @@ import { Inter } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-onest",
+  weight: ["400", "600", "700"],
+  variable: "--font-inter",
 });
 
 const geistSans = Geist({

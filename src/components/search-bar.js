@@ -1,4 +1,4 @@
-import { X, ChevronDown } from "lucide-react";
+import { X, ChevronDown, ArrowUp } from "lucide-react";
 
 export default function ({
   setSearchString,
@@ -43,7 +43,7 @@ export default function ({
           }`}
         >
           <textarea
-          ref={inputRef}
+            ref={inputRef}
             autoFocus
             placeholder="Ask away..."
             autoCapitalize="sentences"
@@ -55,15 +55,15 @@ export default function ({
             value={searchString}
           />
           <button
-            className={`bg-gradient-to-b text-myTextGrey cursor-pointer from-gradientBlue1 to-gradientBlue2 disabled:opacity-50 pl-4 pr-4 pt-2 pb-2 rounded-2xl ${
+            className={`bg-white text-black cursor-pointer disabled:opacity-50 pl-2 pr-2 pt-2 pb-2 rounded-full ${
               isFetching
-                ? ""
-                : "transition-all duration-[500ms] hover:shadow-[0_0_12px_4px_rgba(0,87,209,0.9)]"
+                ? "bg-myTextGrey"
+                : "transition-all duration-[300ms] hover:bg-black hover:text-white"
             }`}
             onClick={handleSearch}
             disabled={isFetching}
           >
-            Search
+            <ArrowUp className={isFetching ? "" : ""} />
           </button>
         </div>
       </div>

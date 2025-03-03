@@ -4,7 +4,7 @@ import { useImperativeHandle, useState, forwardRef, useRef } from "react";
 import { setRedisCookies, fetchTabStream } from "@/lib/network/api-connector";
 import MarkdownConverter from "@/lib/utility/markdown-converter";
 import { useCustomScroll, useShouldScroll } from "@/hooks/scroll-hooks";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ArrowUp } from "lucide-react";
 
 const SideDrawer = forwardRef(({ tabText, inputRef }, ref) => {
   const [tabSearchString, setTabSearchString] = useState("");
@@ -140,15 +140,15 @@ const SideDrawer = forwardRef(({ tabText, inputRef }, ref) => {
           value={tabSearchString}
         />
         <button
-          className={`bg-gradient-to-b cursor-pointer text-myTextGrey from-gradientBlue1 to-gradientBlue2 h-10 rounded-2xl pl-4 pr-4 disabled:opacity-50 ${
+          className={`bg-white text-black cursor-pointer disabled:opacity-50 pl-2 pr-2 pt-2 pb-2 rounded-full ${
             tabIsFetching
-              ? ""
-              : "transition-all duration-[500ms] hover:shadow-[0_0_12px_4px_rgba(0,87,209,0.9)]"
+              ? "bg-myTextGrey"
+              : "transition-all duration-[300ms] hover:bg-black hover:text-white"
           }`}
           onClick={searchTab}
           disabled={tabIsFetching}
         >
-          Search
+          <ArrowUp />
         </button>
       </div>
     </div>
