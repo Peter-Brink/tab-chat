@@ -26,7 +26,7 @@ export default async function handler(req, res) {
   try {
     const searchString = await client.get(`searchString:${sessionId}`);
     const chatHistory = await getChatHistory(sessionId);
-    if(chatHistory[0].role === "model") {
+    if (chatHistory[0].role === "model") {
       chatHistory.shift();
     }
     const replyTo = await client.get(`replyTo:${sessionId}`);
@@ -37,14 +37,12 @@ export default async function handler(req, res) {
         .json({ error: "Search string not found for the given session" });
     }
 
-    const genAI = new GoogleGenerativeAI(
-      process.env.GEMINI_API_KEY
-    );
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",
       systemInstruction:
-        "You are a friendly AI assistant pair programmer who's job is to assist the programmer with their code. You should answer in a relaxed, conversational tone, but remain informative and helpful. If the question starts with a quote delimited by the # key, then your response should be based off of the text in that quote.",
+        "You are a friendly AI assistant pair programmer who's job is to assist the programmer with their code. You should answer in a relaxed, conversational tone, but remain informative and helpful. You should provide concise, succinct answers, keeping them short and sweet. Absolutely only answer what is asked of you and do not provide any extra information. Keep it simple. also, only provide code if you are explicitly asked for it. If the question starts with a quote delimited by the # key, then your response should be based off of the text in that quote.",
     });
 
     const chat = model.startChat({
